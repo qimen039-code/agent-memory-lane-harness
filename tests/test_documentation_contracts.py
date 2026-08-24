@@ -65,13 +65,13 @@ def test_bilingual_readme_and_local_overlay_template_are_present() -> None:
 
     assert "[中文版](./README_zh.md) | English" in readme
     assert "[English](./README.md) | 中文" in readme_zh
-    assert "Current main-branch version: `v1.2.6`." in readme
-    assert "当前 main 分支版本：`v1.2.6`。" in readme_zh
-    assert "Latest tagged GitHub release: [`v1.2.6`]" in readme
-    assert "最新已打 tag 的 GitHub Release：[`v1.2.6`]" in readme_zh
+    assert "Current main-branch version: `v1.2.7`." in readme
+    assert "当前 main 分支版本：`v1.2.7`。" in readme_zh
+    assert "Latest tagged GitHub release: [`v1.2.7`]" in readme
+    assert "最新已打 tag 的 GitHub Release：[`v1.2.7`]" in readme_zh
     assert "releases/latest" in readme
     assert "releases/latest" in readme_zh
-    assert read_text("VERSION").strip() == "v1.2.6"
+    assert read_text("VERSION").strip() == "v1.2.7"
     assert overlay["schema"] == "cbh.project_lane_overlay.v1"
     assert policy["local_project_lane_overlay"]["default_filename"] == "embedded_harness_policy.local.json"
     assert "embedded_harness_policy.local.json" in readme
@@ -167,8 +167,8 @@ def test_citation_notice_are_visible_and_public_report_draft_is_absent() -> None
     assert "claim-boundary-harness-technical-report.md" not in readme_zh
     assert "title: \"Claim Boundary Harness: A Model-Facing Capability Harness for LLM Agent Workflows\"" in citation
     assert "qimen039-code" in citation
-    assert "version: \"1.2.6\"" in citation
-    assert "date-released: \"2026-08-14\"" in citation
+    assert "version: \"1.2.7\"" in citation
+    assert "date-released: \"2026-08-24\"" in citation
     assert "doi: \"10.5281/zenodo.21189879\"" in citation
     assert "10.5281/zenodo.21189879" in doi_badge
     assert 'role="img"' in doi_badge
@@ -179,8 +179,8 @@ def test_citation_notice_are_visible_and_public_report_draft_is_absent() -> None
     assert "## v1.0.0 - 2026-07-20" in changelog
     stale_version = "v0." + "14.0"
     assert stale_version not in changelog
-    assert manifest["harness_version"] == "v1.2.6"
-    assert "## v1.2.6 - 2026-08-14" in changelog
+    assert manifest["harness_version"] == "v1.2.7"
+    assert "## v1.2.7 - 2026-08-24" in changelog
     agents = read_text("AGENTS.md")
     assert "an explicit version update is incomplete" in agents
     assert "GitHub `releases/latest` API agree" in agents

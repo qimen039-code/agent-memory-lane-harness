@@ -87,8 +87,8 @@ CBH 做的是把目标、相关记忆、可用工具、执行记录和验证依�
 - 宿主不支持的能力应标记为 `checked_missing` 或 `checked_blocked`，不能静默宣称启用。
 - 客户端、Hook 协议或相关配置更新后，需要重新运行本地兼容性检查。
 
-当前 main 分支版本：`v1.2.6`。
-最新已打 tag 的 GitHub Release：[`v1.2.6`](https://github.com/qimen039-code/claim-boundary-harness/releases/tag/v1.2.6)。
+当前 main 分支版本：`v1.2.7`。
+最新已打 tag 的 GitHub Release：[`v1.2.7`](https://github.com/qimen039-code/claim-boundary-harness/releases/tag/v1.2.7)。
 外部查询当前版本时，应同时核对默认分支 `VERSION` 与 GitHub
 [`releases/latest`](https://github.com/qimen039-code/claim-boundary-harness/releases/latest)，
 二者必须指向同一版本。

@@ -740,6 +740,7 @@
     "tool_discovery_status_values": [
       "not_needed",
       "not_checked",
+      "resolved_current_exposure",
       "checked_available",
       "checked_missing",
       "checked_blocked",

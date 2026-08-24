@@ -17,6 +17,7 @@ import tomllib  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 AUTHORING = ROOT / "skills" / "embedded-harness" / "embedded_harness_policy.authoring.toml"
 COMPILER = ROOT / "skills" / "embedded-harness" / "compile_policy_from_toml.py"
+RUNTIME_POLICY = ROOT / "skills" / "embedded-harness" / "embedded_harness_policy.json"
 
 
 def test_policy_authoring_toml_is_machine_readable() -> None:
@@ -108,3 +109,11 @@ def test_policy_authoring_toml_matches_runtime_json() -> None:
     payload = json.loads(result.stdout)
     assert payload["status"] == "pass"
     assert payload["changed_tracked_paths"] == []
+
+
+def test_runtime_policy_accepts_resolved_current_exposure() -> None:
+    policy = json.loads(RUNTIME_POLICY.read_text(encoding="utf-8"))
+    values = policy["router_decision_contract"]["tool_discovery_status_values"]
+
+    assert "resolved_current_exposure" in values
+    assert len(values) == len(set(values))

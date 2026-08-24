@@ -115,6 +115,98 @@ def test_snapshot_commit_is_canonical_utf8_and_forms_a_strict_head_chain(tmp_pat
     assert restored["focus"]["current_action"]["text"] == "读取当前实现"
 
 
+def test_workfile_preserves_context_epoch_and_private_workspace_anchor(tmp_path: Path) -> None:
+    workfile = load_workfile_module()
+    path = tmp_path / "workspace-bound.cumcwork"
+    current = new_task_capsule(
+        route(),
+        task_event(
+            "workspace:start",
+            "task_observed",
+            objective="恢复后保持目标与工作区事实对齐",
+            workspace_anchor={
+                "schema": "cbh.workspace_fact_anchor.v1",
+                "workspace_id_sha256": "a" * 64,
+                "source": "git",
+                "git_head": "1" * 40,
+                "git_branch": "main",
+                "worktree_state_sha256": "b" * 64,
+                "observed_at": "2026-08-24T00:00:00Z",
+            },
+        ),
+    )
+    appended = workfile.append_cumcwork_snapshot(
+        path,
+        current,
+        expected_head_sha256=None,
+        expected_work_revision=0,
+    )
+    restored = workfile.rehydrate_cumcwork(
+        path,
+        expected_host_task_key_sha256=current["host_task_key_sha256"],
+    )
+
+    assert restored["active_capsule"]["context_epoch"] == current["context_epoch"]
+    assert restored["active_capsule"]["workspace_anchor"] == current["workspace_anchor"]
+    assert restored["focus"]["context_epoch_id"] == current["context_epoch"]["epoch_id"]
+    assert restored["focus"]["workspace_review_required"] is False
+    assert appended["changed"] is True
+
+
+def test_rehydrate_marks_unexpected_workspace_drift_before_reusing_progress(tmp_path: Path) -> None:
+    from task_continuity import process_worker_request
+
+    path = tmp_path / "workspace-drift.cumcwork"
+    first_anchor = {
+        "schema": "cbh.workspace_fact_anchor.v1",
+        "workspace_id_sha256": "a" * 64,
+        "source": "git",
+        "git_head": "1" * 40,
+        "git_branch": "main",
+        "worktree_state_sha256": "b" * 64,
+        "observed_at": "2026-08-24T00:00:00Z",
+    }
+    process_worker_request(
+        {
+            "op": "observe",
+            "route_receipt": route(),
+            "task_event": task_event(
+                "drift:start",
+                "task_observed",
+                objective="恢复后继续验证当前任务",
+                workspace_anchor=first_anchor,
+            ),
+            "capsule": None,
+            "workfile": {"path": str(path)},
+        }
+    )
+    resumed = process_worker_request(
+        {
+            "op": "observe",
+            "route_receipt": route(),
+            "task_event": task_event(
+                "drift:resume",
+                "task_observed",
+                objective="继续",
+                intent_kind="continue_ack",
+                intent_confidence="high",
+                intent_source="explicit_marker",
+                workspace_anchor={
+                    **first_anchor,
+                    "git_head": "2" * 40,
+                    "observed_at": "2026-08-24T01:00:00Z",
+                },
+            ),
+            "capsule": None,
+            "workfile": {"path": str(path)},
+        }
+    )
+
+    assert resumed["capsule"]["workspace_review_required"] is True
+    assert resumed["capsule"]["objective"] == "恢复后继续验证当前任务"
+    assert "workspace_revalidation_required" in resumed["additional_context_entry"]["value"]
+
+
 def test_worker_request_performs_one_full_workfile_scan(tmp_path: Path, monkeypatch) -> None:
     import task_continuity_workfile as workfile
     from task_continuity import process_worker_request

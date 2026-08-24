@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1",
   "manifest_type": "agent_memory_lane_compatibility_manifest",
-  "harness_version": "v1.2.6",
+  "harness_version": "v1.2.7",
   "adapter": {
     "name": "example-adapter",
     "version": "unverified",

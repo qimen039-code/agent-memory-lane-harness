@@ -68,6 +68,29 @@ def test_short_answer_only_question_stays_dormant() -> None:
     }
 
 
+def test_initial_write_intent_arms_even_when_turn_relation_is_ambiguous() -> None:
+    decision = decide_task_continuity(
+        {
+            "edit_operation_profile": "none",
+            "memory_mode": "none",
+            "tool_surface_need": "none",
+            "action_bindings": [],
+        },
+        event(
+            "initial-write:1",
+            "task_observed",
+            objective="修改并验证专用动态投影",
+            intent_kind="ambiguous",
+            intent_confidence="low",
+            intent_source="fallback",
+        ),
+    )
+
+    assert decision["decision"] == "arm"
+    assert decision["reasons"] == ["write_intent", "tool_required"]
+    assert decision["host_delivery"] == "ready"
+
+
 def test_existing_active_capsule_uses_contract_continue_decision() -> None:
     route = write_route()
     capsule = new_task_capsule(
@@ -624,6 +647,150 @@ def test_refinement_and_correction_are_source_bound_goal_deltas() -> None:
     ]
 
 
+def test_context_epoch_changes_only_for_global_or_validity_changes() -> None:
+    initial_anchor = {
+        "schema": "cbh.workspace_fact_anchor.v1",
+        "workspace_id_sha256": "a" * 64,
+        "source": "git",
+        "git_head": "1" * 40,
+        "git_branch": "main",
+        "worktree_state_sha256": "b" * 64,
+        "observed_at": "2026-08-24T00:00:00Z",
+    }
+    capsule = new_task_capsule(
+        write_route(),
+        event(
+            "epoch:start",
+            "task_observed",
+            objective="保持全局目标并完成验证",
+            workspace_anchor=initial_anchor,
+        ),
+    )
+    initial_epoch = capsule["context_epoch"]["epoch_id"]
+
+    progress_transition = apply_task_event(
+        capsule,
+        event(
+            "epoch:progress",
+            "tool_dispatched",
+            current_step="读取实现",
+            workspace_anchor={
+                **initial_anchor,
+                "worktree_state_sha256": "c" * 64,
+                "observed_at": "2026-08-24T00:01:00Z",
+            },
+            workspace_change_expected=True,
+        ),
+    )
+    progressed = progress_transition["capsule"]
+    assert progressed["context_epoch"]["epoch_id"] == initial_epoch
+    assert progressed["workspace_review_required"] is False
+    assert build_dynamic_reminders(progressed, progress_transition) == []
+
+    refined = apply_task_event(
+        progressed,
+        event(
+            "epoch:refine",
+            "task_observed",
+            objective="再补充一项明确验收标准",
+            intent_kind="refine",
+            workspace_anchor={
+                **initial_anchor,
+                "worktree_state_sha256": "c" * 64,
+                "observed_at": "2026-08-24T00:02:00Z",
+            },
+        ),
+    )["capsule"]
+    assert refined["context_epoch"]["epoch_id"] != initial_epoch
+    context = build_task_capsule_context(refined, [])
+    payload = json.loads(context["entry"]["value"].split("\n", 1)[1])
+    control = json.loads(context["control_entry"]["value"].split("\n", 1)[1])
+    assert payload["context_epoch_id"] == refined["context_epoch"]["epoch_id"]
+    assert control["context_epoch_id"] == refined["context_epoch"]["epoch_id"]
+
+
+def test_unexpected_workspace_change_keeps_goal_but_invalidates_old_progress() -> None:
+    initial_anchor = {
+        "schema": "cbh.workspace_fact_anchor.v1",
+        "workspace_id_sha256": "a" * 64,
+        "source": "git",
+        "git_head": "1" * 40,
+        "git_branch": "main",
+        "worktree_state_sha256": "b" * 64,
+        "observed_at": "2026-08-24T00:00:00Z",
+    }
+    capsule = new_task_capsule(
+        write_route(),
+        event(
+            "workspace:start",
+            "task_observed",
+            objective="修改并验证目标文件",
+            acceptance_criteria=[
+                {"id": "verified", "text": "目标文件已验证"},
+                {"id": "final-review", "text": "最终状态已复核"},
+            ],
+            workspace_anchor=initial_anchor,
+        ),
+    )
+    verified = apply_task_event(
+        capsule,
+        event(
+            "workspace:verified",
+            "verifier_completed",
+            acceptance_id="verified",
+            postcondition_satisfied=True,
+            workspace_anchor=initial_anchor,
+            workspace_change_expected=True,
+        ),
+    )["capsule"]
+    prior_epoch = verified["context_epoch"]["epoch_id"]
+
+    changed_transition = apply_task_event(
+        verified,
+        event(
+            "workspace:changed",
+            "task_observed",
+            objective="继续",
+            intent_kind="continue_ack",
+            workspace_anchor={
+                **initial_anchor,
+                "git_head": "2" * 40,
+                "worktree_state_sha256": "d" * 64,
+                "observed_at": "2026-08-24T01:00:00Z",
+            },
+        ),
+    )
+    changed = changed_transition["capsule"]
+
+    assert changed["objective"] == "修改并验证目标文件"
+    assert changed["acceptance_criteria"][0]["status"] == "verified"
+    assert changed["workspace_review_required"] is True
+    assert changed["workspace_review_reason"] == "workspace_anchor_changed"
+    assert changed["context_epoch"]["epoch_id"] != prior_epoch
+    context = build_task_capsule_context(changed, [])
+    assert "workspace_revalidation_required" in context["control_entry"]["value"]
+    assert "workspace_fact_status" in context["entry"]["value"]
+    reminders = build_dynamic_reminders(changed, changed_transition)
+    assert reminders[0]["trigger"] == "workspace_revalidation_required"
+    assert reminders[0]["context_epoch_id"] == changed["context_epoch"]["epoch_id"]
+
+    revalidated = apply_task_event(
+        changed,
+        event(
+            "workspace:revalidated",
+            "verifier_completed",
+            acceptance_id="final-review",
+            postcondition_satisfied=True,
+            workspace_anchor=changed["workspace_anchor"],
+            workspace_change_expected=True,
+            workspace_revalidated=True,
+        ),
+    )["capsule"]
+    assert revalidated["workspace_review_required"] is False
+    assert revalidated["workspace_review_reason"] is None
+    assert revalidated["context_epoch"]["epoch_id"] != changed["context_epoch"]["epoch_id"]
+
+
 def test_working_frame_preserves_goal_outputs_purpose_and_stop_condition() -> None:
     capsule = new_task_capsule(
         write_route(),
@@ -1009,6 +1176,82 @@ def test_model_context_contains_progress_not_chain_of_thought() -> None:
     assert context["char_count"] <= 1800
 
 
+def test_task_context_exposes_projection_identity_and_causal_relation() -> None:
+    current = new_task_capsule(
+        write_route(),
+        event(
+            "projection:start",
+            "task_observed",
+            objective="实现并验证运行时投影",
+            acceptance_criteria=[
+                {"id": "projection-verified", "text": "运行时投影已验证"},
+            ],
+        ),
+    )
+    current = apply_task_event(
+        current,
+        event(
+            "projection:dispatch",
+            "tool_dispatched",
+            current_step="commandExecution",
+        ),
+    )["capsule"]
+    context = build_task_capsule_context(current, [])
+    evidence = json.loads(context["entry"]["value"].split("\n", 1)[1])
+    control = json.loads(context["control_entry"]["value"].split("\n", 1)[1])
+
+    assert len(evidence["runtime_projection_id"]) == 64
+    assert len(control["runtime_projection_source_digest"]) == 64
+    assert len(evidence["full_capsule_sha256"]) == 64
+    assert evidence["causal_relation"] == {
+        "status": "explicit_binding",
+        "specificity": "host_kind_only",
+        "serves_output_ids": [],
+        "serves_criterion_ids": ["projection-verified"],
+        "reason": "serves_acceptance_criterion:projection-verified",
+    }
+    assert control["runtime_projection_id"] == evidence["runtime_projection_id"]
+    assert "实现并验证运行时投影" not in context["control_entry"]["value"]
+
+
+def test_worker_returns_separate_small_dynamic_projection() -> None:
+    current = new_task_capsule(
+        write_route(),
+        event(
+            "dynamic:start",
+            "task_observed",
+            objective="修改并验证动态提醒投影",
+            acceptance_criteria=[
+                {"id": "postcondition", "text": "语义后置条件已验证"},
+            ],
+        ),
+    )
+    response = process_worker_request(
+        {
+            "op": "observe",
+            "response_profile": "compact",
+            "route_receipt": write_route(),
+            "task_event": event(
+                "dynamic:result",
+                "tool_result_received",
+                acceptance_id="postcondition",
+                postcondition_satisfied=False,
+            ),
+            "capsule": current,
+        }
+    )
+
+    dynamic = response["dynamic_context_entries"]
+    dynamic_text = json.dumps(dynamic, ensure_ascii=False)
+    normal_text = json.dumps(response["additional_context_entries"], ensure_ascii=False)
+    assert dynamic["control"]["kind"] == "application"
+    assert len(response["dynamic_projection_id"]) == 64
+    assert dynamic["evidence"]["kind"] == "untrusted"
+    assert "missing_postcondition" in dynamic_text
+    assert "修改并验证动态提醒投影" not in dynamic_text
+    assert len(dynamic_text) < len(normal_text)
+
+
 def test_host_limit_fallback_keeps_global_goal_and_next_action_model_visible() -> None:
     capsule = new_task_capsule(
         write_route(),
@@ -1044,6 +1287,32 @@ def test_host_limit_fallback_keeps_global_goal_and_next_action_model_visible() -
 
     assert evidence["global_goal_anchor"]["objective"] == "在长期项目中保持整体目标、处理临时问答并完成发布"
     assert evidence["next_action"] == ambiguous["next_action"]
+    assert evidence["causal_relation"]["status"] in {
+        "fallback_objective",
+        "unresolved",
+    }
+
+
+def test_task_context_owns_host_limit_independently_from_internal_projection() -> None:
+    current = new_task_capsule(
+        write_route(),
+        event(
+            "context:projection-limit",
+            "task_observed",
+            objective="保持目标并完成验证",
+            acceptance_criteria=[{"id": "done", "text": "完成验证"}],
+        ),
+    )
+    context = build_task_capsule_context(
+        current,
+        [],
+        host_limits={"max_chars": 800, "max_tokens": 850},
+    )
+    evidence = json.loads(context["entry"]["value"].split("\n", 1)[1])
+
+    assert context["char_count"] <= 800
+    assert evidence["global_goal_anchor"]["objective"] == "保持目标并完成验证"
+    assert evidence["next_action"] == current["next_action"]
     assert evidence["next_action"]
     assert evidence["turn_relation"]["kind"] == "ambiguous"
     assert context["char_count"] <= 1000

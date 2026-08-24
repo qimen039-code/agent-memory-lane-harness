@@ -17,6 +17,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from runtime_projection import project_runtime
+
 
 DECISION_SCHEMA = "cbh.task_continuity_decision.v1"
 CAPSULE_SCHEMA = "cbh.task_capsule.v1"
@@ -26,6 +28,8 @@ REMINDER_SCHEMA = "cbh.dynamic_reminder.v1"
 TRANSPORT_SCHEMA = "cbh.transport_plan.v1"
 PAGE_SCHEMA = "cbh.transport_page.v1"
 WORKER_SCHEMA = "cbh.task_continuity_worker_response.v1"
+CONTEXT_EPOCH_SCHEMA = "cbh.context_epoch.v1"
+WORKSPACE_ANCHOR_SCHEMA = "cbh.workspace_fact_anchor.v1"
 
 LIFECYCLES = {"DORMANT", "ARMED", "ACTIVE", "VERIFYING", "RETIRED"}
 INTENT_KINDS = {
@@ -93,6 +97,116 @@ def _canonical_json(value: Any) -> str:
 
 def _sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _normalize_workspace_anchor(value: Any) -> dict[str, Any] | None:
+    if not isinstance(value, Mapping):
+        return None
+    workspace_id = _bounded_text(value.get("workspace_id_sha256"), 128)
+    if not workspace_id:
+        return None
+    source = str(value.get("source") or "path_only")
+    if source not in {"git", "path_only"}:
+        source = "path_only"
+    identity = {
+        "workspace_id_sha256": workspace_id,
+        "source": source,
+        "git_head": _bounded_text(value.get("git_head"), 160) or None,
+        "git_branch": _bounded_text(value.get("git_branch"), 320) or None,
+        "worktree_state_sha256": (
+            _bounded_text(value.get("worktree_state_sha256"), 128) or None
+        ),
+    }
+    return {
+        "schema": WORKSPACE_ANCHOR_SCHEMA,
+        **identity,
+        "anchor_sha256": _sha256_text(_canonical_json(identity)),
+        "observed_at": _bounded_text(value.get("observed_at"), 80) or None,
+        "validity": str(value.get("validity") or "aligned"),
+    }
+
+
+def _derive_context_epoch(capsule: Mapping[str, Any]) -> dict[str, Any]:
+    goal_anchor = (
+        capsule.get("global_goal_anchor")
+        if isinstance(capsule.get("global_goal_anchor"), Mapping)
+        else {}
+    )
+    workspace = (
+        capsule.get("workspace_anchor")
+        if isinstance(capsule.get("workspace_anchor"), Mapping)
+        else {}
+    )
+    identity = {
+        "capsule_id": capsule.get("capsule_id"),
+        "goal_revision": int(capsule.get("goal_revision") or 1),
+        "global_goal_anchor_sha256": goal_anchor.get("objective_sha256"),
+        "workspace_id_sha256": workspace.get("workspace_id_sha256"),
+        "git_head": workspace.get("git_head"),
+        "git_branch": workspace.get("git_branch"),
+        "workspace_review_required": bool(
+            capsule.get("workspace_review_required")
+        ),
+    }
+    return {
+        "schema": CONTEXT_EPOCH_SCHEMA,
+        "epoch_id": _sha256_text(_canonical_json(identity)),
+        "goal_revision": identity["goal_revision"],
+        "global_goal_anchor_sha256": identity["global_goal_anchor_sha256"],
+        "workspace_scope_sha256": _sha256_text(
+            _canonical_json(
+                {
+                    "workspace_id_sha256": identity["workspace_id_sha256"],
+                    "git_head": identity["git_head"],
+                    "git_branch": identity["git_branch"],
+                }
+            )
+        ),
+        "workspace_review_required": identity["workspace_review_required"],
+    }
+
+
+def _reconcile_workspace_anchor(
+    capsule: dict[str, Any],
+    task_event: Mapping[str, Any],
+    reasons: list[str],
+) -> None:
+    incoming = _normalize_workspace_anchor(task_event.get("workspace_anchor"))
+    if incoming is None:
+        return
+    prior = _normalize_workspace_anchor(capsule.get("workspace_anchor"))
+    expected_change = task_event.get("workspace_change_expected") is True
+    changed = bool(
+        prior
+        and prior.get("anchor_sha256") != incoming.get("anchor_sha256")
+    )
+    if prior is None:
+        incoming["validity"] = "aligned"
+        capsule["workspace_anchor"] = incoming
+        capsule["workspace_review_required"] = False
+        capsule["workspace_review_reason"] = None
+        return
+    if changed and not expected_change:
+        incoming["validity"] = "review_required"
+        incoming["previous_anchor_sha256"] = prior.get("anchor_sha256")
+        capsule["workspace_review_required"] = True
+        capsule["workspace_review_reason"] = "workspace_anchor_changed"
+        reasons.append("workspace_anchor_changed")
+    else:
+        incoming["validity"] = (
+            "review_required"
+            if capsule.get("workspace_review_required")
+            else "aligned"
+        )
+    if (
+        task_event.get("workspace_revalidated") is True
+        and task_event.get("postcondition_satisfied") is True
+    ):
+        incoming["validity"] = "aligned"
+        capsule["workspace_review_required"] = False
+        capsule["workspace_review_reason"] = None
+        reasons.append("workspace_anchor_revalidated")
+    capsule["workspace_anchor"] = incoming
 
 
 def _copy(value: Any) -> Any:
@@ -375,6 +489,9 @@ def decide_task_continuity(
         if not reasons:
             reasons = ["existing_active_capsule"]
         host_delivery = "ready"
+    elif reasons:
+        decision = "arm"
+        host_delivery = "ready"
     elif (
         _intent_kind(task_event) in {"continue_ack", "ambiguous"}
         and _event_type(task_event) == "task_observed"
@@ -382,9 +499,6 @@ def decide_task_continuity(
         decision = "dormant"
         reasons = []
         host_delivery = "not_needed"
-    elif reasons:
-        decision = "arm"
-        host_delivery = "ready"
     else:
         decision = "dormant"
         host_delivery = "not_needed"
@@ -645,6 +759,12 @@ def ensure_v3_capsule(
         current.setdefault("turn_relation", None)
         current.setdefault("suspended_task_stack", [])
         current.setdefault("reuse_candidates", [])
+        current["workspace_anchor"] = _normalize_workspace_anchor(
+            current.get("workspace_anchor")
+        )
+        current.setdefault("workspace_review_required", False)
+        current.setdefault("workspace_review_reason", None)
+        current["context_epoch"] = _derive_context_epoch(current)
         return current
 
     ordered: list[Mapping[str, Any]] = []
@@ -762,6 +882,12 @@ def ensure_v3_capsule(
     if first is not None:
         current["next_action"] = first.get("text")
         current["next_action_reason"] = "earliest_incomplete_acceptance_item"
+    current["workspace_anchor"] = _normalize_workspace_anchor(
+        current.get("workspace_anchor")
+    )
+    current.setdefault("workspace_review_required", False)
+    current.setdefault("workspace_review_reason", None)
+    current["context_epoch"] = _derive_context_epoch(current)
     return current
 
 
@@ -870,6 +996,12 @@ def new_task_capsule(
         "reuse_candidates": _normalize_reuse_candidates(
             task_event.get("reuse_candidates") or []
         ),
+        "workspace_anchor": _normalize_workspace_anchor(
+            task_event.get("workspace_anchor")
+        ),
+        "workspace_review_required": False,
+        "workspace_review_reason": None,
+        "context_epoch": None,
         "transport": {},
         "resume_entry": None,
         "applied_event_ids": [event_id],
@@ -889,6 +1021,7 @@ def new_task_capsule(
     capsule["global_goal_anchor"] = _global_goal_anchor(capsule)
     capsule["active_local_delta"] = _local_delta(task_event, relation)
     capsule["turn_relation"] = relation
+    capsule["context_epoch"] = _derive_context_epoch(capsule)
     return capsule
 
 
@@ -1038,6 +1171,7 @@ def apply_task_event(
     previous_lifecycle = str(updated["lifecycle"])
     progress_delta: list[str] = []
     reasons: list[str] = []
+    _reconcile_workspace_anchor(updated, task_event, reasons)
     updated["applied_event_ids"] = [*prior_ids, event_id]
     updated["last_event"] = {
         "event_id": event_id,
@@ -1329,6 +1463,7 @@ def apply_task_event(
             updated["next_action"] = first.get("text")
             updated["next_action_reason"] = "earliest_incomplete_acceptance_item"
     updated["progress_revision"] = int(updated.get("progress_revision") or 0) + 1
+    updated["context_epoch"] = _derive_context_epoch(updated)
     return {
         "schema": TRANSITION_SCHEMA,
         "capsule": updated,
@@ -1355,6 +1490,17 @@ def _reminder_candidate(
 ) -> tuple[str, str, str] | None:
     event_type = str(transition.get("event_type") or "")
     last_event = capsule.get("last_event") if isinstance(capsule.get("last_event"), Mapping) else {}
+    if "workspace_anchor_changed" in (transition.get("transition_reasons") or []):
+        epoch = (
+            capsule.get("context_epoch", {}).get("epoch_id")
+            if isinstance(capsule.get("context_epoch"), Mapping)
+            else "unknown"
+        )
+        return (
+            "workspace_revalidation_required",
+            f"workspace_revalidation:{epoch}",
+            "re-read workspace-bound evidence and revalidate prior progress before reusing it as current fact",
+        )
     if event_type == "task_observed" and capsule.get("semantic_review_required"):
         return (
             "global_alignment_required",
@@ -1436,6 +1582,11 @@ def build_dynamic_reminders(
             "reminder_id": reminder_id,
             "capsule_id": snapshot.get("capsule_id"),
             "progress_revision": revision,
+            "context_epoch_id": (
+                snapshot.get("context_epoch", {}).get("epoch_id")
+                if isinstance(snapshot.get("context_epoch"), Mapping)
+                else None
+            ),
             "trigger": trigger,
             "scope": "current_task_only",
             "severity": "action_required",
@@ -1721,6 +1872,12 @@ def build_task_capsule_context(
             "char_count": 0,
             "delivery": "not_needed",
         }
+    runtime_projection = project_runtime(
+        "global_causal_task",
+        capsule=capsule,
+    )
+    projection_envelope = runtime_projection["envelope"]
+    causal_relation = _copy(projection_envelope["payload"]["relation"])
     max_chars = min(3_200, _positive_int(
         host_limits.get("max_chars") if isinstance(host_limits, Mapping) else None,
         name="max_chars",
@@ -1780,6 +1937,7 @@ def build_task_capsule_context(
         "progress_revision": capsule.get("progress_revision"),
         "reading_order": [
             "global_goal_anchor",
+            "workspace_fact_status",
             "goal_deltas",
             "remaining_work",
             "next_action",
@@ -1788,6 +1946,24 @@ def build_task_capsule_context(
             "reuse_candidates",
         ],
         "global_goal_anchor": _context_global_anchor(capsule.get("global_goal_anchor")),
+        "context_epoch_id": (
+            capsule.get("context_epoch", {}).get("epoch_id")
+            if isinstance(capsule.get("context_epoch"), Mapping)
+            else None
+        ),
+        "runtime_projection_id": projection_envelope["projection_id"],
+        "causal_relation": causal_relation,
+        "workspace_fact_status": (
+            {
+                "status": "review_required",
+                "reason": capsule.get("workspace_review_reason"),
+                "required_action": (
+                    "re-read workspace-bound evidence and revalidate prior progress"
+                ),
+            }
+            if capsule.get("workspace_review_required")
+            else None
+        ),
         "objective": capsule.get("objective"),
         "purpose": capsule.get("purpose"),
         "required_outputs": [
@@ -1880,6 +2056,9 @@ def build_task_capsule_context(
             "progress_revision",
             "reading_order",
             "global_goal_anchor",
+            "context_epoch_id",
+            "runtime_projection_id",
+            "causal_relation",
             "objective",
             "goal_revision",
             "full_capsule_sha256",
@@ -1897,6 +2076,10 @@ def build_task_capsule_context(
             "progress_revision": capsule.get("progress_revision"),
             "reading_order": payload.get("reading_order"),
             "global_goal_anchor": payload.get("global_goal_anchor"),
+            "context_epoch_id": payload.get("context_epoch_id"),
+            "runtime_projection_id": projection_envelope["projection_id"],
+            "causal_relation": causal_relation,
+            "workspace_fact_status": payload.get("workspace_fact_status"),
             "objective": capsule.get("objective"),
             "purpose": capsule.get("purpose"),
             "required_outputs": payload.get("required_outputs", []),
@@ -1942,6 +2125,10 @@ def build_task_capsule_context(
             "progress_revision": capsule.get("progress_revision"),
             "full_capsule_sha256": full_capsule_sha256,
             "global_goal_anchor": anchor,
+            "context_epoch_id": payload.get("context_epoch_id"),
+            "runtime_projection_id": projection_envelope["projection_id"],
+            "causal_relation": causal_relation,
+            "workspace_fact_status": payload.get("workspace_fact_status"),
             "goal_revision": capsule.get("goal_revision"),
             "semantic_review_required": True,
             "turn_relation": _copy(capsule.get("turn_relation")),
@@ -1956,6 +2143,9 @@ def build_task_capsule_context(
                 "progress_revision",
                 "full_capsule_sha256",
                 "global_goal_anchor",
+                "context_epoch_id",
+                "runtime_projection_id",
+                "causal_relation",
                 "goal_revision",
                 "semantic_review_required",
                 "continuation_required",
@@ -1979,6 +2169,20 @@ def build_task_capsule_context(
             if isinstance(capsule.get("turn_relation"), Mapping)
             else None
         )
+        compact_causal_relation = {
+            "status": causal_relation.get("status"),
+            "specificity": causal_relation.get("specificity"),
+        }
+        focused_relation_id = next(
+            iter(
+                causal_relation.get("serves_output_ids")
+                or causal_relation.get("serves_criterion_ids")
+                or []
+            ),
+            None,
+        )
+        if focused_relation_id is not None:
+            compact_causal_relation["focused_id"] = focused_relation_id
 
         def compact_identity(objective_limit: int, next_action_limit: int) -> dict[str, Any]:
             objective_preview = _bounded_text(objective, objective_limit)
@@ -1997,6 +2201,12 @@ def build_task_capsule_context(
                     "progress_revision": capsule.get("progress_revision"),
                     "full_capsule_sha256": full_capsule_sha256,
                     "global_goal_anchor": compact_anchor,
+                    "context_epoch_id": (
+                        capsule.get("context_epoch", {}).get("epoch_id")
+                        if isinstance(capsule.get("context_epoch"), Mapping)
+                        else None
+                    ),
+                    "causal_relation": compact_causal_relation,
                     "goal_revision": capsule.get("goal_revision"),
                     "semantic_review_required": True,
                     "turn_relation": relation,
@@ -2009,6 +2219,8 @@ def build_task_capsule_context(
                     "progress_revision",
                     "full_capsule_sha256",
                     "global_goal_anchor",
+                    "context_epoch_id",
+                    "causal_relation",
                     "goal_revision",
                     "semantic_review_required",
                     "continuation_required",
@@ -2040,7 +2252,9 @@ def build_task_capsule_context(
     first_remaining = _first_remaining(capsule)
     lifecycle = str(capsule.get("lifecycle") or "ACTIVE")
     semantic_review_required = bool(capsule.get("semantic_review_required"))
-    if semantic_review_required:
+    if capsule.get("workspace_review_required"):
+        required_action_code = "workspace_revalidation_required"
+    elif semantic_review_required:
         required_action_code = "adjudicate_current_turn_without_replacing_global_goal"
     elif lifecycle == "VERIFYING":
         required_action_code = "verify_semantic_postcondition_before_completion"
@@ -2056,6 +2270,15 @@ def build_task_capsule_context(
         "lifecycle": lifecycle,
         "progress_revision": capsule.get("progress_revision"),
         "goal_revision": capsule.get("goal_revision"),
+        "context_epoch_id": (
+            capsule.get("context_epoch", {}).get("epoch_id")
+            if isinstance(capsule.get("context_epoch"), Mapping)
+            else None
+        ),
+        "runtime_projection_id": projection_envelope["projection_id"],
+        "runtime_projection_source_digest": projection_envelope["source_digest"],
+        "causal_relation_status": causal_relation.get("status"),
+        "causal_relation_specificity": causal_relation.get("specificity"),
         "global_goal_anchor_sha256": (
             capsule.get("global_goal_anchor", {}).get("objective_sha256")
             if isinstance(capsule.get("global_goal_anchor"), Mapping)
@@ -2067,6 +2290,7 @@ def build_task_capsule_context(
             else None
         ),
         "semantic_review_required": bool(capsule.get("semantic_review_required")),
+        "workspace_review_required": bool(capsule.get("workspace_review_required")),
         "required_action_code": required_action_code,
         "earliest_pending_id": first_remaining.get("id") if first_remaining else None,
         "reminder_triggers": [
@@ -2223,6 +2447,7 @@ def process_worker_request(
                     "required_action",
                     "expires_when",
                     "dedupe_key",
+                    "context_epoch_id",
                 )
                 if item.get(key) is not None
             }
@@ -2288,12 +2513,39 @@ def process_worker_request(
             "delivery": "not_needed",
         }
     )
+    dynamic_projection = (
+        project_runtime(
+            "dynamic_reminder",
+            capsule=current,
+            reminder=reminders[0],
+            host_limits=(
+                request.get("dynamic_host_limits")
+                if isinstance(request.get("dynamic_host_limits"), Mapping)
+                else None
+            ),
+        )
+        if current is not None and reminders
+        else None
+    )
     result = {
         "schema": WORKER_SCHEMA,
         "decision": decision,
         "capsule": current,
         "transition": transition,
         "dynamic_reminders": reminders,
+        "dynamic_context_entries": (
+            {
+                "control": dynamic_projection["control_entry"],
+                "evidence": dynamic_projection["evidence_entry"],
+            }
+            if dynamic_projection is not None
+            else None
+        ),
+        "dynamic_projection_id": (
+            dynamic_projection["envelope"]["projection_id"]
+            if dynamic_projection is not None
+            else None
+        ),
         "additional_context_entry": context["entry"],
         "additional_context_entries": {
             "control": context.get("control_entry"),

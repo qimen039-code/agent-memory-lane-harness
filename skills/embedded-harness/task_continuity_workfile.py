@@ -68,6 +68,10 @@ _CAPSULE_KEYS = {
     "turn_relation",
     "suspended_task_stack",
     "reuse_candidates",
+    "workspace_anchor",
+    "workspace_review_required",
+    "workspace_review_reason",
+    "context_epoch",
     "legacy_projection",
     "transport",
     "resume_entry",
@@ -82,6 +86,7 @@ _REMINDER_KEYS = {
     "required_action",
     "expires_when",
     "dedupe_key",
+    "context_epoch_id",
 }
 
 
@@ -134,6 +139,12 @@ def _focus_from_capsule(capsule: Mapping[str, Any]) -> dict[str, Any]:
         "lifecycle": capsule.get("lifecycle"),
         "progress_revision": capsule.get("progress_revision"),
         "goal_revision": capsule.get("goal_revision"),
+        "context_epoch_id": (
+            capsule.get("context_epoch", {}).get("epoch_id")
+            if isinstance(capsule.get("context_epoch"), Mapping)
+            else None
+        ),
+        "workspace_review_required": bool(capsule.get("workspace_review_required")),
         "objective": capsule.get("objective"),
         "purpose": capsule.get("purpose"),
         "required_outputs": copy.deepcopy(capsule.get("required_outputs") or []),

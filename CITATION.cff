@@ -3,8 +3,8 @@ message: "If you use or adapt Claim Boundary Harness, please cite this repositor
 title: "Claim Boundary Harness: A Model-Facing Capability Harness for LLM Agent Workflows"
 authors:
   - name: "qimen039-code"
-version: "1.2.6"
-date-released: "2026-08-14"
+version: "1.2.7"
+date-released: "2026-08-24"
 doi: "10.5281/zenodo.21189879"
 repository-code: "https://github.com/qimen039-code/claim-boundary-harness"
 url: "https://github.com/qimen039-code/claim-boundary-harness"

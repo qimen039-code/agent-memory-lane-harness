@@ -6,6 +6,24 @@ This project uses `vMAJOR.MINOR.PATCH` version labels.
 
 ## Unreleased
 
+## v1.2.7 - 2026-08-24
+
+- Added deterministic runtime projections for global-goal-to-local-action
+  relationships and action-required reminders, with separate generated control
+  and untrusted evidence channels, source-bound identities, context-epoch
+  invalidation, and bounded host transport.
+- Extended task continuity with context epochs, workspace-fact validity,
+  reminder-only dynamic context for compatible host adapters, and an
+  append-only restart path that keeps canonical task state separate from
+  disposable model-facing projections.
+- Fixed first-turn continuity activation so mechanically detected write or
+  tool signals arm the task even when the initial semantic relation remains
+  ambiguous; ambiguity still cannot replace an existing global task.
+- Added the `resolved_current_exposure` capability-discovery status and public
+  deployment dependency mapping for the new projection module.
+- Added focused projection, continuity, workfile, policy, host-limit, and
+  real-worker integration regressions.
+
 ## v1.2.6 - 2026-08-14
 
 - Removed the remaining core documentation-contract reads of the frozen
