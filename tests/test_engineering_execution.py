@@ -173,8 +173,8 @@ def test_real_seam_requires_two_independent_verified_host_surfaces() -> None:
                 "producer_receipt_sha256": first_hash,
             },
             {
-                "adapter_id": "workbuddy-runtime",
-                "host_surface": "python-sdk",
+                "adapter_id": "codex-cli",
+                "host_surface": "cli",
                 "core_contract_sha256": "a" * 64,
                 "verification_status": "verified",
                 "receipt_ref": "receipt-2",

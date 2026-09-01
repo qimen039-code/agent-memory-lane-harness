@@ -1,12 +1,12 @@
 # Deployment Risk Patterns
 
-Use this guide when adapting Claim Boundary Harness into an agent runtime.
+Use this guide when adapting Agent Cognitive Continuity Framework into an agent runtime.
 
-The WorkBuddy case shows the core deployment risk: copying the harness files is
-not the same as loading the model-layer pre-action contract or wiring an
-independent host gate into the execution path. If the model does not load the
-contract, the model-layer stop is inactive; if the runtime does not call a gate
-before the protected action, host-enforced denial is inactive.
+The core deployment risk is that copying framework files is not the same as
+loading the model-layer pre-action contract or wiring an independent host gate
+into the execution path. If the model does not load the contract, the
+model-layer stop is inactive; if the runtime does not call a gate before the
+protected action, host-enforced denial is inactive.
 
 This document is intentionally version-neutral. Agent clients change hook names, config locations, environment variables, and tool schemas. Treat every product-specific integration as unverified until it passes the local acceptance tests below.
 
@@ -30,14 +30,13 @@ These records are not meant to expand every turn. Use them during adapter setup,
 
 ## Deployment Levels
 
-CBH v1.1 no longer bundles a deny/permit/wrapper/Stop chain. In the table and
-failure catalog below, any physical blocking or denial is a host-native
-security capability, not a CBH behavior-correction feature. This does not
-remove the mandatory model-layer stop before an unauthorized protected action.
+The model-layer pre-action stop and host-native physical enforcement are
+separate surfaces. The table below records what each wired level can actually
+enforce.
 
 | Level | What is wired | What it can enforce |
 | --- | --- | --- |
-| L0 instruction only | Root instructions such as `AGENTS.md`, `CLAUDE.md`, or workspace rules | Model-layer behavior contract. Protected actions stop before execution when the model loads and follows it; no independent host denial is claimed. |
+| L0 instruction only | Root `AGENTS.md` or configured workspace rules | Model-layer behavior contract. Protected actions stop before execution when the model loads and follows it; no independent host denial is claimed. |
 | L1 model-layer pre-action control plane | Intake router, memory/search/claim gates called by the agent or user | Structured decisions plus a mandatory stop before unauthorized protected actions. Still not an independent host execution blocker. |
 | L2 optional behavior correction | Verified current-candidate rewrite hook | Can rewrite one mechanically matched input; no match or failure is a no-op. |
 | L3 tool proxy / in-process middleware | All protected tool execution goes through one policy function or proxy | Stronger runtime enforcement for covered tools. Bypass paths still matter. |
@@ -50,7 +49,7 @@ Most adopters should aim for L1 plus an optional, verified L2 correction path. D
 | Runtime family | Typical integration surface | Main deployment risk | Practical solution |
 | --- | --- | --- | --- |
 | Instruction-file agents | Workspace rule files, project docs, memory files | The file is present but not loaded by the agent | Ask the agent to report the routing receipt on a test task, and keep a visible root instruction entry. |
-| CLI agents with hooks | Pre-prompt, pre-tool, post-tool, stop hooks | Hook exists but is not on the actual execution path | Use CBH for model-layer routing and pre-action stopping; if the host exposes a native denial hook, verify that host-native denial before relying on it. |
+| CLI agents with hooks | Pre-prompt, pre-tool, post-tool, stop hooks | Hook exists but is not on the actual execution path | Use ACCF for model-layer routing and pre-action stopping; if the host exposes a native denial hook, verify that host-native denial before relying on it. |
 | IDE or desktop agents | IDE extension settings, tool executor pipeline, output gate | UI actions, background tasks, or built-in tools bypass the wrapper | Identify every tool execution surface and mark unhooked surfaces as advisory. |
 | Custom orchestrators | Python/Node middleware, tool registry, function dispatcher | Policy is called after execution or its result is ignored | Keep the model-layer pre-action stop and put an adopter-owned host-native enforcement function before dispatch when independent physical blocking is required. |
 | Hosted or SaaS agents | Limited settings, system prompts, external tools | No local pre-tool hook is available | Use the model-layer pre-action stop and describe host execution denial as unavailable, or move protected actions behind an external proxy you control. |
@@ -75,7 +74,7 @@ Most adopters should aim for L1 plus an optional, verified L2 correction path. D
 | DEP-013 | Public repository examples leak local settings | Local hook configs or personal paths were committed | Keep product-specific local settings out of the public package; publish templates only | Scan docs and examples for local paths, private project names, and credential-like fields |
 | DEP-014 | Everything becomes slow after adoption | The adapter wraps every tool call or loads all memory/skills by default | Keep L0/L1 cheap and use event-triggered expansion; hard-wrap only critical risks | Compare ordinary read-only task latency before and after adoption |
 | DEP-015 | `--fail-open` remains enabled | Setup diagnostics were left in production mode | Remove fail-open flags after first-time hook setup | Force a hook-runner error and confirm high-risk pre-tool calls fail closed |
-| DEP-016 | Human confirmation becomes too broad | Host or model treats one confirmation as future authority | Bind confirmation to the exact current action in the governing host flow; CBH correction must not carry or create permission | Confirm a later or changed action still requires its own host-governed decision |
+| DEP-016 | Human confirmation becomes too broad | Host or model treats one confirmation as future authority | Bind confirmation to the exact current action in the governing host flow; ACCF correction must not carry or create permission | Confirm a later or changed action still requires its own host-governed decision |
 | DEP-017 | Built-in background actions bypass gates | The agent performs background indexing, auto-fixes, or hidden commands outside tool hooks | Identify background execution surfaces and mark unhooked surfaces advisory | Check runtime logs during startup, indexing, and automatic actions |
 | DEP-018 | Tool input parsing misses dangerous commands | The command is nested under a tool-specific field not parsed by the adapter | Update the adapter to inspect the actual tool schema used by the host | Capture one real tool event JSON and verify hard patterns are detected |
 | DEP-019 | Hook runner logs `codec can't encode character '\ud...'` | Host stdin JSON decoded to lone UTF-16 surrogate values, then output/logging writes them as Unicode | Sanitize hook payloads before routing and log/output writes; prefer ASCII-escaped hook output | Replay a captured hook payload with `\udcac` or `\udc80` and confirm routing still returns context |
@@ -100,7 +99,7 @@ These examples are written for the adopting user's agent. They are not product-s
 Symptom:
 
 ```text
-The repository contains AGENTS.md or CLAUDE.md, but the agent answers as if no harness exists.
+The repository contains `AGENTS.md`, but the agent answers as if no framework instructions exist.
 ```
 
 Check:
@@ -111,7 +110,7 @@ Check:
 
 Solution path:
 
-1. Rename or mirror the root instructions to the file the agent reads, such as `AGENTS.md`, `CLAUDE.md`, or the agent's configured rule file.
+1. Confirm that the installed client reads the repository's `AGENTS.md` or configured instruction path.
 2. Keep the root file short enough to load reliably.
 3. Put large memory, examples, and adapter details behind links or meta indexes.
 4. Re-run the routing receipt test.
@@ -431,39 +430,6 @@ Acceptance check:
 The agent can explain whether a retrieved memory is raw observation, working memory, capsule, or archive, and whether it is source_prior, bounded_claim, local_validated, conflicted, or rejected.
 ```
 
-### Example 13: Claude Code Mapping Exists But Local Deployment Is Unverified
-
-Symptom:
-
-```text
-The repository includes a Claude Code integration example, but the installed Claude Code client does not clearly load the rule file or expose the expected hook/wrapper path.
-```
-
-Check:
-
-- Which instruction filename or settings surface does the installed client actually read?
-- Can the client run a pre-task, pre-tool, command, or final-answer hook before the protected action?
-- Does a blocked result stop execution, or is it only shown as advisory text?
-- Which shell, tool executor, file editor, or background path can bypass the wrapper?
-
-Solution path:
-
-1. Treat `docs/integrations/claude-code.md` as a reference mapping until local checks pass.
-2. Ask the local agent to run the instruction-load, allowed-action, blocked-action, and bypass tests from this guide.
-3. Record the actual client version, instruction entry, hook schema, denial behavior, wrapper path, and bypass surfaces in a compatibility manifest.
-4. If no host-enforced pre-action surface exists, keep the mandatory
-   model-layer pre-action stop, and state that independent execution-time
-   blocking is unavailable before making stronger enforcement claims.
-
-Acceptance check:
-
-```text
-The installed Claude Code client loads the intended instruction entry, routes a
-mixed-risk task, and stops a disposable high-risk action before execution.
-Report model-layer stopping and host-enforced denial separately; if either path
-fails, mark that specific layer unavailable for the environment.
-```
-
 ## Agent-Facing Troubleshooting Runbook
 
 When an adopting agent reports "the harness is deployed but it does not behave like a hard gate", do not guess from repository files alone. Check the actual runtime path in this order.
@@ -472,7 +438,7 @@ When an adopting agent reports "the harness is deployed but it does not behave l
 
 Inspect:
 
-- workspace root instruction file, such as `AGENTS.md`, `CLAUDE.md`, or the agent's configured rules file;
+- workspace root `AGENTS.md` and configured instruction paths;
 - agent settings page or config file that declares instruction paths;
 - the first agent response after a test prompt.
 
@@ -507,7 +473,7 @@ Run the intake router directly with a known mixed-risk task. If the adopter also
 
 Expected:
 
-- CBH returns the expected risk, gates, and mandatory pre-action confirmation need;
+- ACCF returns the expected risk, gates, and mandatory pre-action confirmation need;
 - the optional correction path only rewrites a mechanically verified current input;
 - any host-native enforcement test uses the host's documented denial schema and exit behavior.
 
@@ -657,7 +623,7 @@ Use this decision tree:
 
 ## Mainstream Agent Checklist
 
-Use this checklist for Codex, Claude Code, WorkBuddy, IDE agents, terminal assistants, and custom agent frameworks.
+Use this checklist when deploying or revalidating the framework in Codex.
 
 1. **Instruction entry:** which file or setting is actually read by the agent?
 2. **Prompt stage:** is there a prompt-submit or pre-task surface where routing can store the original task?

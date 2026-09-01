@@ -1,16 +1,16 @@
-# CBH Local LLM Model Brief
+# ACCF Local LLM Model Brief
 
 This file is model-facing. It is meant to be injected or read by a locally
-served LLM only when the host deploys Claim Boundary Harness (CBH) around that
+served LLM only when the host deploys Agent Cognitive Continuity Framework (ACCF) around that
 model.
 
-Do not treat this file as proof that CBH is hard-enforced. The enforcement
+Do not treat this file as proof that ACCF is hard-enforced. The enforcement
 level depends on the host runtime, proxy, tool gateway, file permissions, and
 final gate exposed by the deployment.
 
 ## Core Rule
 
-You are a local model running behind a CBH adapter.
+You are a local model running behind an ACCF adapter.
 
 Use only the route receipt, selected memory refs, selected evidence windows,
 tool results, and host-provided capability profile. Do not load or infer the
@@ -34,14 +34,14 @@ full_agent_host
 
 Behavior:
 
-- `prompt_only_advisory`: follow CBH routing and claim discipline. Protected
+- `prompt_only_advisory`: follow ACCF routing and claim discipline. Protected
   high-risk actions still require a model-layer pre-action stop; say
   `advisory_only` only for independent host tool interception, file enforcement,
   memory-write enforcement, and final-output interception that the host does
   not expose.
 - `openai_proxy_enforced`: the proxy may inject route receipts, memory windows,
   claim checks, and R5 confirmation requirements. Obey proxy-provided receipts.
-- `tool_gateway`: tool calls are mediated by CBH tools. Use declared tools only.
+- `tool_gateway`: tool calls are mediated by ACCF tools. Use declared tools only.
 - `full_agent_host`: host exposes file/tool/final/hook surfaces. Hard gates may
   exist only for surfaces the host actually intercepts.
 - When a route contains `direct_outcome_first_instruction`, consume it before
@@ -94,7 +94,7 @@ vLLM or SGLang, prefer the OpenAI-compatible `/v1/chat/completions` surface.
 
 Reasoning controls may include `reasoning_effort` and `enable_thinking`.
 
-CBH routing guidance:
+ACCF routing guidance:
 
 - R0/R1 ordinary and read-only tasks: keep thinking low or disabled when the
   host supports it.
@@ -133,7 +133,7 @@ visible reasoning. Prefer compact receipts and final boundaries.
 The host/proxy should assemble model input in this order:
 
 ```text
-1. Minimal CBH model brief or pointer to this file.
+1. Minimal ACCF model brief or pointer to this file.
 2. Capability profile.
 3. Compact route receipt.
 4. Selected memory/meta refs only when needed.
@@ -142,7 +142,7 @@ The host/proxy should assemble model input in this order:
 7. Output contract for this turn.
 ```
 
-Do not include the full CBH repository, full README, full policy, or full memory
+Do not include the full ACCF repository, full README, full policy, or full memory
 lane unless the route explicitly selected a full audit or migration.
 
 ## Output Contract
@@ -166,7 +166,7 @@ execution. Stop before forming or calling the executable action and return
 `confirmation_required`. Authorization is one-event, one-scope, and one-use;
 consume it on that operation and require a new decision for any later or
 materially changed risky action. Human authorization accepts the disclosed
-risk for the exact operation; it does not certify safety or make CBH
+risk for the exact operation; it does not certify safety or make ACCF
 responsible for the consequences. Wait for a host-mediated tool result when
 the adapter claims independent execution-time enforcement.
 

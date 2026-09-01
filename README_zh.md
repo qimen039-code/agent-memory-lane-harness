@@ -1,32 +1,33 @@
 [English](./README.md) | 中文
 
-# Claim Boundary Harness
+# Agent Cognitive Continuity Framework
 
 [![Smoke checks](https://github.com/qimen039-code/claim-boundary-harness/actions/workflows/smoke.yml/badge.svg?branch=main)](https://github.com/qimen039-code/claim-boundary-harness/actions/workflows/smoke.yml)
 [![Zenodo concept DOI](./docs/assets/doi-badge.svg)](https://doi.org/10.5281/zenodo.21189879)
 
 ## 30 秒看懂
 
-CBH 是面向编码 Agent 大模型的一套控制闭环。它把任务总目标、相关上下文、执行证据和
-下一步动作持续连接起来，覆盖规划、工具调用、错误恢复与最终声明。它不替 AI 工作，
-也不是另一个 AI、后台任务引擎或大模型替代品。
+Agent Cognitive Continuity Framework（ACCF，智能体认知连续框架）是一套位于
+宿主大模型外部的记忆连续、执行状态连续和持续任务注意力辅助框架。它把任务总目标、
+相关上下文、执行证据和下一步动作持续连接起来，覆盖规划、工具调用、错误恢复与最终
+声明。它不替 AI 工作，也不是另一个 AI、后台任务引擎或大模型替代品。
 
-在复杂和长期任务中，CBH 帮助 AI 少忘事、不串项目、不提前宣布完成、不反复犯同一种
-错误，也不轻易把猜测写成已经确认的事实。
+在复杂和长期任务中，ACCF 帮助 AI 持续看见总目标、当前阶段、行动原因、验收标准与
+相关记忆，减少只顾局部、任务漂移和过早宣布完成。
 
 真正负责理解需求、制定计划、使用工具、修复错误和回答用户的，始终是原来的大模型。
-CBH 做的是把目标、相关记忆、可用工具、执行记录和验证依据整理好，在关键时刻交给
-模型使用。它能减少可避免的问题，但不能保证模型永远正确，也不能彻底消除幻觉。
-只有客户端真正加载并验证了相关入口，对应能力才算已经生效。
+ACCF 不修改模型内部的注意力权重；它通过在选定的执行边界重新提供紧凑、最新的
+任务状态，形成行为层面的连续注意。只有客户端真正消费并验证了相关入口，对应
+能力才算已经生效。
 
-对于受保护的高风险动作，CBH 的第一道阻断发生在工具调用之前：模型决策路径必须先
+对于受保护的高风险动作，ACCF 的第一道阻断发生在工具调用之前：模型决策路径必须先
 停止，向人工汇报精确目标、范围、影响、可逆性和非目标，在取得针对该事件的明确授权
 之前不得形成或调用实际执行动作。这是模型层的强制执行前 gate；它不同于宿主 hook、
 代理、权限系统或沙箱提供的执行时硬拦截，后者只有在真实接入并验证的路径上才成立。
 
 ## 它解决什么问题
 
-| 常见问题 | CBH 怎么帮忙 | 深入了解时的名称 |
+| 常见问题 | ACCF 怎么帮忙 | 深入了解时的名称 |
 | --- | --- | --- |
 | 长任务做着做着偏离目标，或只完成一小部分就以为全部完成 | 持续保留总目标、当前范围和最终检查 | 任务路由、事件复评、最终声明检查 |
 | 一个局部可见修改还没落地，Agent 就先搭保护层、框架、策略或全局抽象 | 最小必要读取后，第一次实质修改必须落到用户指定表面；扩大范围必须有证据或明确要求 | `direct_outcome_first_gate`、动作绑定、有界扩张条件 |
@@ -39,34 +40,32 @@ CBH 做的是把目标、相关记忆、可用工具、执行记录和验证依�
 
 ## 先选择使用方式
 
-不是每一位编码 Agent 用户都必须安装 CBH。按照自己真正遇到的问题，选择成本最低且
+不是每一位编码 Agent 用户都必须安装 ACCF。按照自己真正遇到的问题，选择成本最低且
 足够有效的使用方式即可；以下是使用方式，不是必须逐级升级的成熟度等级。
 
 | 使用方式 | 适用情况 | 建议行动 | 是否算已经部署 |
 | --- | --- | --- | --- |
 | 阅读与参考 | 只想了解如何整理记忆、交接长任务、检查证据或减少重复错误 | 阅读相关说明；复用时注明来源 | 否 |
-| 借用一个设计思路 | 只需要其中一个办法，例如把不同项目的记忆分开 | 在自己的方案中改写并测试这个办法，同时保留适用的署名和许可证说明 | 否；这是参考 CBH 后的独立实现 |
+| 借用一个设计思路 | 只需要其中一个办法，例如把不同项目的记忆分开 | 在自己的方案中改写并测试这个办法，同时保留适用的署名和许可证说明 | 否；这是参考 ACCF 后的独立实现 |
 | 完整安装到自己的 Agent | 上述问题已经反复影响日常使用，希望各部分协同工作 | 把整套必要组件部署到实际客户端，按客户端能力适配并完成验收 | 只有真实客户端检查通过后才算 |
-| 集成进 Agent 客户端或团队工具 | 正在开发 Agent 产品、客户端或团队内部工具 | 把 CBH 的规则、记忆、检查和交接链路接入产品并持续测试 | 只有实际接入且验证通过的部分算生效 |
+| 接入 Codex | 维护个人 Codex 环境或团队工作流 | 把 ACCF 的规则、记忆、检查和交接链路接入实际使用的 Codex 环境并持续测试 | 只有实际接入且验证通过的部分算生效 |
 
-只阅读或借鉴 CBH 也是合理的使用结果，不需要因为其中一个办法适合自己就安装整套
-框架。只有选择完整安装或产品集成，并声称相关能力已经生效时，才需要部署完整的必要
+只阅读或借鉴 ACCF 也是合理的使用结果，不需要因为其中一个办法适合自己就安装整套
+框架。只有选择完整安装或 Codex 集成，并声称相关能力已经生效时，才需要部署完整的必要
 组件、接入真实客户端并完成验收。
 
 ## 快速开始
 
-如果选择了完整本地部署或宿主集成，开始前不需要先读懂 CBH 的全部契约。只要你的
-类 Codex IDE 或终端 Agent 能读取工作区指令并运行本地工具，就可以在目标 Agent 中
+如果选择了完整本地部署或 Codex 集成，开始前不需要先读懂 ACCF 的全部契约。只要
+Codex 能读取工作区指令并运行本地工具，就可以在目标任务中
 新建任务、给它一个可访问的本地工作区，然后把下面这一整行直接发给它：
 
 ```text
-请将 https://github.com/qimen039-code/claim-boundary-harness 默认 main 分支的最新 Claim Boundary Harness 部署到当前编码 Agent 环境：先阅读 docs/agent-deployment-map.md；检查当前宿主真实存在的指令、Skill、Command、Hook、模型循环、权限与沙箱接口；列出精确写入目标并备份现有配置；选择一个完整的声明式部署 profile，生成并保留其全部依赖闭包；取得必要授权后，只对宿主确实支持的表面进行本地适配；使用公开模板初始化私有本地 overlay，不得公开本机路径或记忆；运行编译器、验证器、doctor、相关 profile 测试和一次新任务生命周期 smoke；最后返回包含 checked_available、checked_missing、checked_blocked 的部署回执，且不得把“文件已复制”说成“能力已激活”。
+请将 https://github.com/qimen039-code/claim-boundary-harness 默认 main 分支的最新 Agent Cognitive Continuity Framework 部署到当前编码 Agent 环境：先阅读 docs/agent-deployment-map.md；检查当前宿主真实存在的指令、Skill、Command、Hook、模型循环、权限与沙箱接口；列出精确写入目标并备份现有配置；选择一个完整的声明式部署 profile，生成并保留其全部依赖闭包；取得必要授权后，只对宿主确实支持的表面进行本地适配；使用公开模板初始化私有本地 overlay，不得公开本机路径或记忆；运行编译器、验证器、doctor、相关 profile 测试和一次新任务生命周期 smoke；最后返回包含 checked_available、checked_missing、checked_blocked 的部署回执，且不得把“文件已复制”说成“能力已激活”。
 ```
 
-这是一条发给编码 Agent 的部署指令，不是假装适用于所有系统的通用 shell 安装命令。
-不同客户端的指令文件、Skill 注册、Hook、权限系统和工具生命周期并不相同，因此必须
-先检查真实宿主，再进行适配。本地 Codex 类宿主可以将 `codex-local-minimal` 作为第一
-个完整基线；其他宿主可以把它当作集成参考，但不能把它当作兼容性证明。
+该任务会先检查当前安装的指令文件、Skill 注册、Hook、权限系统、沙箱和工具生命周期，
+再以 `codex-local-minimal` 作为完整基线适配本机路径。
 
 ### Agent 接下来应该做什么
 
@@ -78,7 +77,7 @@ CBH 做的是把目标、相关记忆、可用工具、执行记录和验证依�
 
 ### 使用前需要注意
 
-- CBH 是宿主 Agent 的能力增强层，不是另一个脱离模型运行的自治软件。
+- ACCF 是宿主 Agent 的能力增强层，不是另一个脱离模型运行的自治软件。
 - 下载或复制仓库不等于激活；宿主必须真正加载指令入口，并调用所声明的 router、
   consumer 或 hook。
 - 现有指令和配置必须通过经过复核的局部补丁或备份保留，不能盲目覆盖用户环境。
@@ -100,17 +99,17 @@ CBH 做的是把目标、相关记忆、可用工具、执行记录和验证依�
 > 缓存摘要和归档文档不能单独作为当前版本证据，除非当前 `main` 或最新
 > Release 明确指向它们。
 
-> **部署完整性注释：** CBH 被设计为一个相互依赖的控制闭环。部署时应先选择
+> **部署完整性注释：** ACCF 被设计为一个相互依赖的控制闭环。部署时应先选择
 > 一个完整的声明式 runtime profile，部署其全部依赖闭包并验证通过，然后再做
 > 宿主适配。初次部署不要按感觉拆选路由、记忆、检索、纠偏或验证组件；局部部署
 > 可能切断组件间的相互增益链路，使实际能力低于这些局部组件看起来应有的能力。
 > 论文、说明文档、示例和开发测试不属于运行时能力组件，可以不进入 runtime 包。
 
-引用与署名：如果你在研究、工具、产品或评测中使用、改编或讨论 CBH，请优先使用
+引用与署名：如果你在研究、工具、产品或评测中使用、改编或讨论 ACCF，请优先使用
 `CITATION.cff` 引用本仓库，并保留 `NOTICE.md` 与 MIT license notice。
 Zenodo concept DOI 为 [10.5281/zenodo.21189879](https://doi.org/10.5281/zenodo.21189879)。
 
-宿主大模型始终是任务规划者、工具使用者、语义判断者和最终答复作者。CBH
+宿主大模型始终是任务规划者、工具使用者、语义判断者和最终答复作者。ACCF
 不会脱离大模型自行执行用户任务。它的确定性辅助能力保持很窄：生成紧凑路由、
 选择索引化上下文或验证已声明的边界，然后把结果交还给模型 Agent。可选的宿主
 纠偏 hook 只能改写一个经过机械验证的当前输入；它不会授权、拒绝、冻结任务，
@@ -120,7 +119,7 @@ Zenodo concept DOI 为 [10.5281/zenodo.21189879](https://doi.org/10.5281/zenodo.
 重复小错误和技术债，应该被沉淀成有边界的记录、测试或小型策略更新，而不是不断堆
 active skill、长提示词和压缩摘要，最后把上下文污染到让模型变钝。
 
-CBH 不是：
+ACCF 不是：
 
 - 脱离大模型独立运行的自治任务引擎或后台工作流；
 - 向量数据库或语义记忆数据库；
@@ -134,21 +133,21 @@ CBH 不是：
 
 ### 执行前停止与人工授权
 
-过去把 CBH 笼统写成“advisory、没有硬拦截”并不准确。需要区分两层：
+过去把 ACCF 笼统写成“advisory、没有硬拦截”并不准确。需要区分两层：
 
-- **模型层执行前停止：** 一旦识别出受保护的高风险动作，受 CBH 治理的 Agent 在取得
+- **模型层执行前停止：** 一旦识别出受保护的高风险动作，受 ACCF 治理的 Agent 在取得
   精确人工授权前不得进入工具执行。这一状态转换规则不依赖宿主是否提供 deny hook。
 - **宿主执行时硬拦截：** Hook、代理、权限系统、沙箱或操作系统在模型之外拒绝工具
-  调用。CBH 只对已经真实接入并通过阻断测试的路径声明这种能力。
+  调用。ACCF 只对已经真实接入并通过阻断测试的路径声明这种能力。
 
 人工授权只绑定一个具体事件、一个声明范围和一次使用；该次操作消费授权，后续不同或
 实质变化的危险动作必须重新停止并请求授权。人工在看到风险后授权精确操作，表示人工
-接管该次风险决定；CBH 记录授权边界，但不把该操作认证为安全，也不对该次已授权危险
+接管该次风险决定；ACCF 记录授权边界，但不把该操作认证为安全，也不对该次已授权危险
 操作的后果作安全担保。Agent 仍必须严格限制在授权范围内，并回报实际结果。
 
 ## 技术概览（面向开发者和 Agent）
 
-CBH 为 Codex 类宿主大模型 Agent 增加一层低成本、面向模型的能力增强与认知治理；
+ACCF 为 Codex 任务增加一层低成本、面向模型的能力增强与认知治理；
 模型仍负责规划、工具调用、恢复和最终答复。这个仓库已经包含：
 
 - 工作开始前的 routing receipt、R0-R5 风险处理和事件触发复评；
@@ -173,7 +172,7 @@ CBH 为 Codex 类宿主大模型 Agent 增加一层低成本、面向模型的�
 | 验证行为 | [docs/test-cases.md](docs/test-cases.md)、[docs/reproduction.md](docs/reproduction.md) |
 | 客户端适配 | [docs/integrations](docs/integrations) |
 
-## CBH 能力索引
+## ACCF 能力索引
 
 本文件提供中文快速理解、核心能力和迁移入口；英文 README 保留完整目录树和更长的
 复现清单。引用来源、测试边界和细分契约见下方关键文档。
@@ -197,15 +196,12 @@ CBH 为 Codex 类宿主大模型 Agent 增加一层低成本、面向模型的�
 | 科研路线分诊 | `docs/research-triage-three-questions.md` | 区分机械裁判、裁判审计和治理路径 |
 | 交互错误路由 | `docs/interaction-error-corpus.md` | 单语料库、四条隔离控制表面车道 |
 
-WorkBuddy、豆包、Bash 和其他宿主或平台适配属于独立的 integration reference，
-不是 CBH 能力项；是否可用取决于采用者的宿主接口和本地验证。
-
 ## 架构概览
 
 ```mermaid
 flowchart LR
     U[用户任务] --> A[宿主大模型 Agent]
-    A --> R[CBH 微内核与路由]
+    A --> R[ACCF 微内核与路由]
     R --> C[紧凑上下文与动作绑定]
     C --> A
     A --> H{宿主存在时调用窄 guard}
@@ -216,7 +212,7 @@ flowchart LR
     A --> F[最终答复]
 ```
 
-CBH 的核心链路：
+ACCF 的核心链路：
 
 ```text
 用户任务
@@ -240,7 +236,7 @@ CBH 的核心链路：
 - 重复犯同类小错误，因为错误和解决方式没有沉淀成可复用记录；
 - skill、memory、hook、AGENTS.md 等执行入口和治理文件没有互相链接成一整条闭环。
 
-CBH 用一套低成本结构把这些点连起来。
+ACCF 用一套低成本结构把这些点连起来。
 
 ## 核心差异
 
@@ -280,7 +276,7 @@ CBH 用一套低成本结构把这些点连起来。
 
 ## 记忆 lane 和链接
 
-CBH 的记忆不是“越多越好”，而是 lane-and-link：
+ACCF 的记忆不是“越多越好”，而是 lane-and-link：
 
 ```text
 独立记忆 lane
@@ -332,7 +328,7 @@ memory
 
 ## 因果归因边界
 
-CBH 不把“路径、观察、案例”直接写成机制定义。关于趋势、长期行为、全局能力、幻觉漂移、
+ACCF 不把“路径、观察、案例”直接写成机制定义。关于趋势、长期行为、全局能力、幻觉漂移、
 模型是否变好等问题，必须区分：
 
 - `mechanism_property`：机制结构本身的属性；
@@ -344,8 +340,8 @@ CBH 不把“路径、观察、案例”直接写成机制定义。关于趋势�
 
 ## 手动部署与验证
 
-1. 从 `integrations/workbuddy-python-runtime/deployment-profiles.json` 选择一个完整的机器可读 profile；本地 Codex 类 agent 先用 `codex-local-minimal`。
-2. 使用 `integrations/workbuddy-python-runtime/scripts/build-deployment-bundle.py --profile <名称> --list` 查看精确文件，或用 `--output <空目录>` 生成部署包，并完整保留该 profile 解析出的文件集合；不要按能力名称挑选单个文件，也不要把仓库存在误认为已经激活。
+1. 从 `integrations/codex-local/deployment-profile.json` 选择 `codex-local-minimal`。
+2. 使用 `integrations/codex-local/build-deployment-bundle.py --profile codex-local-minimal --list` 查看精确文件，或用 `--output <空目录>` 生成部署包，并完整保留该 profile 解析出的文件集合；不要按能力名称挑选单个文件，也不要把仓库存在误认为已经激活。
 3. 将部署包中的 `AGENTS.md` 作为完整基线；只有在整个 profile 通过部署检查后，才适配宿主专用路径。
 4. 修改 `skills/embedded-harness/embedded_harness_policy.authoring.toml` 中的高频触发规则。
 5. 运行编译检查，保持 runtime JSON 同步。
@@ -355,7 +351,7 @@ CBH 不把“路径、观察、案例”直接写成机制定义。关于趋势�
 7. 可选：填充 `templates/static-knowledge-layer/` 作为项目地图、入口点和约定手册。
 8. 在非平凡任务前运行 intake router。
 
-可选 skill 调优：采用者可单独安装 [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt)。CBH 不捆绑或部署该工具。
+可选 skill 调优：采用者可单独安装 [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt)。ACCF 不捆绑或部署该工具。
 
 PowerShell：
 
@@ -380,24 +376,16 @@ bash ./skills/embedded-harness/bash/harness_intake_router.sh --task-text "fix th
 ```bash
 python tools/cbh_doctor.py --repo-root . --json
 python -m pytest tests
-python -m unittest discover -s integrations/workbuddy-python-runtime/tests
 ```
 
 ## 公开使用边界
 
 公开仓库只提供通用框架、参考实现、合成示例和可复现测试包；不得包含本地私有项目名称、私有 memory 胶囊、真实事故历史，或任何脱敏后仍能指向维护者本地项目的痕迹。
 
-CBH 应在每个采用者自己的本地 lane 中成长。项目专属记忆、fieldnote、已解决事故、客户端部署观察应留在私有 overlay 或项目本地文件中；只有可复用的通用规则和测试才应提升回公开包。
+ACCF 应在每个采用者自己的本地 lane 中成长。项目专属记忆、fieldnote、已解决事故、客户端部署观察应留在私有 overlay 或项目本地文件中；只有可复用的通用规则和测试才应提升回公开包。
 
-当前公开包只声明以下边界：
-
-- **Codex**：参考集成和 active harness smoke checks；客户端更新后需重跑检查。
-- **WorkBuddy**：Python adapter 单元测试和 hook-runner 参考路径；最小 profile 默认不启用
-  `Stop`，因为部分宿主会先流式显示残片，再把 Stop 反馈注入对话；这不是完整
-  WorkBuddy 版本认证。
-- **豆包**：当前证据只支持 chat/workspace 范围内的 advisory demo，不支持 inspected desktop client 中的持久 custom-skill 或 tool 注册。
-- **其他客户端**：只有参考映射，直到目标客户端的 instruction、hook 协议、权限语义和
-  bypass surfaces 被实际测试。
+当前集成入口、可调用表面和客户端更新后的复核方法见
+[docs/integrations/codex.md](docs/integrations/codex.md)。
 
 ## 关键文档
 
@@ -420,23 +408,21 @@ CBH 应在每个采用者自己的本地 lane 中成长。项目专属记忆、f
 - [CITATION.cff](CITATION.cff)、[NOTICE.md](NOTICE.md)
 - [docs/reproduction.md](docs/reproduction.md)
 - [docs/integrations/codex.md](docs/integrations/codex.md)
-- [docs/integrations/workbuddy.md](docs/integrations/workbuddy.md)
-- [docs/integrations/doubao.md](docs/integrations/doubao.md)
 
 ## 限制
 
 - 脚本不是沙箱。
-- 模型层执行前停止以宿主模型真实加载并遵循 CBH 决策路径为边界；执行时硬拦截只有在
+- 模型层执行前停止以宿主模型真实加载并遵循 ACCF 决策路径为边界；执行时硬拦截只有在
   宿主实际调用并尊重 deny-capable gate 的路径上才成立。
 - 触发词仍需按真实项目持续校准。
 - 记忆格式是模板和契约，不是数据库。
 - 本机私有路径应放在 local overlay，不应提交到公开仓库。
-- Bash/macOS/Linux 参考路径需要在目标机器和 shell 中验证。
+- Codex、PowerShell 或本地路径更新后需要重跑对应检查。
 - 还有未知边界和未覆盖工作流。
 
 ## 反馈
 
-如果你把 CBH 迁移到其他 agent、系统或项目，最有价值的反馈包括：
+如果你在 Codex 项目或工作流中使用 ACCF，最有价值的反馈包括：
 
 - 路由误判；
 - 记忆 lane 污染风险；

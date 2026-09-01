@@ -1,14 +1,14 @@
 {
   "schema_version": "0.1",
-  "manifest_type": "agent_memory_lane_compatibility_manifest",
+  "manifest_type": "codex_local_compatibility_manifest",
   "harness_version": "v1.2.7",
   "adapter": {
-    "name": "example-adapter",
+    "name": "codex-local",
     "version": "unverified",
     "checked_at": "YYYY-MM-DDTHH:MM:SSZ"
   },
   "runtime": {
-    "name": "example-agent-runtime",
+    "name": "Codex",
     "version": "unverified",
     "platform": "unverified",
     "client_update_sensitive": true
@@ -19,8 +19,8 @@
     "last_checked": "unverified"
   },
   "deployment_profile": {
-    "profile_id": "unverified",
-    "profile_manifest": "integrations/workbuddy-python-runtime/deployment-profiles.json",
+    "profile_id": "codex-local-minimal",
+    "profile_manifest": "integrations/codex-local/deployment-profile.json",
     "full_repository_copy_required": false,
     "bundle_receipt_required": true,
     "papers_articles_and_development_tests_excluded_by_default": true
@@ -43,7 +43,6 @@
       "first_principles_profile",
       "skill_audit_profile"
     ],
-    "agent_loop_contract_schema": "cbh.workbuddy_agent_loop_contract.v1",
     "action_consumer_schema": "cbh.model_context_consumption.v1",
     "task_execution_owner": "host_model_agent",
     "host_loop_consumer_implemented": "unverified",

@@ -1,6 +1,6 @@
 # Declarative Governance Contract
 
-The governance contract is the machine-readable boundary between an agent runtime and Claim Boundary Harness.
+The governance contract is the machine-readable boundary between an agent runtime and Agent Cognitive Continuity Framework.
 
 It does not replace host permissions or sandboxing. It declares what the model-facing runtime should decide before deeper work starts and which bounded outputs it can consume.
 

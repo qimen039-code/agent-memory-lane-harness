@@ -982,8 +982,6 @@
         "命令"
       ],
       "adapter": [
-        "WorkBuddy",
-        "Claude Code",
         "adapter",
         "适配"
       ],
@@ -2134,8 +2132,6 @@
           "AGENTS sync",
           "memory rule sync",
           "profile field sync",
-          "Codex and WorkBuddy",
-          "Codex/WorkBuddy",
           "环环相扣",
           "联动表面",
           "同步表面",
@@ -2144,10 +2140,7 @@
           "路由同步",
           "策略同步",
           "规则同步",
-          "记忆规则同步",
-          "Codex 和 WorkBuddy",
-          "只更新 codex 和 workbuddy",
-          "主要更新codex和workbuddy"
+          "记忆规则同步"
         ]
       },
       "public_private_surface_gate": {
@@ -3542,8 +3535,6 @@
           "release date",
           "official fact",
           "official source",
-          "Claude",
-          "Anthropic",
           "官方",
           "官方事实",
           "官方来源",
@@ -4291,8 +4282,6 @@
     "product mechanism",
     "current mechanism",
     "memory synthesis",
-    "Claude",
-    "Anthropic",
     "external architecture",
     "architecture comparison",
     "compare",

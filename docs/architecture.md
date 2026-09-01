@@ -1,6 +1,6 @@
 # Architecture
 
-Claim Boundary Harness has four layers.
+Agent Cognitive Continuity Framework has four layers.
 
 ## 1. Root Microkernel
 
@@ -33,7 +33,9 @@ Machine-local project lane roots are loaded through a private overlay file:
 `CBH_PROJECT_LANES_FILE`. This keeps concrete cwd project evidence available to
 the router without publishing private local paths in the shared policy JSON.
 
-The repository also includes adapter examples outside the core skill folder, such as `integrations/workbuddy-python-runtime`. These adapters should be treated as host-specific references. They can reuse the same `embedded_harness_policy.json`, but they do not change the core framework contract unless the adopting runtime actually calls them at the right execution boundary.
+The local deployment profile and bundle builder live under
+`integrations/codex-local/`. They stage the declared runtime closure but do not
+establish host activation without the corresponding lifecycle checks.
 
 The mandatory model-layer pre-action control plane sits around the router:
 
@@ -58,7 +60,7 @@ action independently of model compliance.
 Authorization is one-event, one-declared-scope, and one-use. A later, repeated,
 expanded, or materially changed risky action must enter the gate again. The
 operator accepts the disclosed decision risk for the exact authorized action;
-CBH does not certify it as safe or assume responsibility for its consequences.
+ACCF does not certify it as safe or assume responsibility for its consequences.
 
 ## Hook Capture Point Matrix
 
@@ -369,11 +371,13 @@ current candidate
 -> allow + updatedInput, or silent no-op
 ```
 
-There is no CBH hard-stop state inside this correction layer. Ambiguity,
+There is no ACCF hard-stop state inside this correction layer. Ambiguity,
 verifier failure, unsupported protocol, or no match leaves the event unchanged.
-This narrow statement does not describe the whole CBH control plane: R5 and
+This narrow statement does not describe the whole ACCF control plane: R5 and
 other protected actions still stop at the model decision layer until exact
 authorization, while independent execution-time denial remains host-native.
+Claims, memory writes, and execution authority remain governed by the model's
+instructions and the host's native boundaries.
 
 ## Search And Learning Decision Matrix
 
@@ -489,6 +493,7 @@ Even after hook or wrapper integration, enforcement is limited to paths that act
 Do not treat this layer as a hard sandbox. If an agent has a direct execution
 route that bypasses the wrapper or tool proxy, host-enforced denial is absent on
 that route. The model-layer pre-action stop still applies when that agent loads
-and follows the CBH control path.
+and follows the ACCF control path.
 
-The published adapters are not complete compatibility certifications. PowerShell, Bash, and WorkBuddy Python paths must be smoke-tested in the target device, shell, client version, and hook or loop surface before any hard-enforcement claim is made.
+PowerShell and hook paths must be smoke-tested against the installed client,
+shell, and lifecycle surface before any enforcement claim is made.

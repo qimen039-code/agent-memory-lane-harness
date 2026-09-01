@@ -1,0 +1,49 @@
+{
+  "schema": "cbh.deployment_profiles.v1",
+  "rule": "Deploy one complete named runtime profile as a dependency-closed baseline; do not cherry-pick individual capability files or infer activation from repository presence.",
+  "profiles": {
+    "codex-local-minimal": {
+      "required_predeployment_read": "docs/agent-deployment-map.md",
+      "description": "Codex local instruction and PowerShell runtime files without research papers, articles, examples, or development tests.",
+      "runtime_mode": "instruction_plus_selective_scripts",
+      "include": [
+        "AGENTS.md",
+        "skills/embedded-harness/embedded_harness_policy.json",
+        "skills/embedded-harness/behavior_correction_gate.py",
+        "skills/embedded-harness/behavior_correction_hook.py",
+        "skills/embedded-harness/behavior_correction_profiles.json",
+        "skills/embedded-harness/behavior_correction_source_map.md",
+        "skills/embedded-harness/engineering_execution.py",
+        "skills/embedded-harness/execution_feedback.py",
+        "skills/embedded-harness/external_route_trigger_helpers.ps1",
+        "skills/embedded-harness/external_retrieval_strategy.py",
+        "skills/embedded-harness/harness_action_consumer.py",
+        "skills/embedded-harness/harness_claim_schema_verifier.ps1",
+        "skills/embedded-harness/harness_external_research_gate.ps1",
+        "skills/embedded-harness/harness_intake_router.ps1",
+        "skills/embedded-harness/harness_memory_isolation_gate.ps1",
+        "skills/embedded-harness/nested_tool_preflight.py",
+        "skills/embedded-harness/python_inline_write_analysis.py",
+        "skills/embedded-harness/runtime_projection.py",
+        "skills/embedded-harness/semantic_memory.py",
+        "skills/embedded-harness/task_continuity.py",
+        "skills/embedded-harness/validate_policy.ps1"
+      ],
+      "host_blocking": false,
+      "boundary": "Direct scripts return model-facing decisions. The optional behavior hook may only return a verified current-input rewrite and never grants execution authority; nested-tool preflight remains a caller-invoked diagnostic."
+    }
+  },
+  "excluded_by_default": [
+    "docs/**",
+    "tests/**",
+    "**/tests/**",
+    "docs/articles/**",
+    "**/*.pdf",
+    "**/*.pptx",
+    "**/*.docx",
+    "CHANGELOG.md",
+    "CITATION.cff",
+    "paper/**",
+    "research/**"
+  ]
+}

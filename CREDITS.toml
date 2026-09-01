@@ -57,7 +57,7 @@ not_adopted = [
   "generated runtime config",
   "always-on hook enforcement",
 ]
-boundary = "source-prior design influence; Claim Boundary Harness keeps a portable markdown and script reference contract"
+boundary = "source-prior design influence; Agent Cognitive Continuity Framework keeps a portable markdown and script reference contract"
 docs_ref = "docs/influences-and-attribution.md"
 
 [[influence]]
@@ -116,33 +116,6 @@ not_adopted = [
   "SDK dependency",
 ]
 boundary = "source-prior design influence only"
-docs_ref = "docs/influences-and-attribution.md"
-
-[[client_artifact_reference]]
-id = "doubao-built-in-finance-market-skills"
-name = "Doubao built-in finance and market-analysis skills"
-source_type = "local_client_artifact"
-observed_at = "2026-06-25"
-used_for = [
-  "staged contract loading",
-  "source facts payload separation",
-  "evidence lane boundaries",
-  "deterministic scaffold derive lint repair verify flow",
-  "check-only render gates",
-  "two-stage artifact delivery",
-  "domain aesthetic rubric inspiration",
-  "domain source-tier catalog inspiration",
-  "external-model structured JSON filler boundary",
-]
-not_adopted = [
-  "Doubao code",
-  "prompt text",
-  "templates",
-  "proprietary schema",
-  "finance-domain data-source rules",
-  "finance-specific facts schema as a global default",
-]
-boundary = "source-prior local client artifact reference only; no implementation text or proprietary assets are copied"
 docs_ref = "docs/influences-and-attribution.md"
 
 [[pattern]]
@@ -212,7 +185,7 @@ used_for = [
   "causal attribution levels",
   "intervention and counterfactual boundary pressure",
 ]
-boundary = "CBH does not perform formal causal identification or prove causal effects from text alone"
+boundary = "ACCF does not perform formal causal identification or prove causal effects from text alone"
 
 [[pattern]]
 id = "systems-thinking-task-context"
@@ -222,7 +195,7 @@ used_for = [
   "root-cause cleanup boundaries",
   "local symptom versus system-structure distinction",
 ]
-boundary = "CBH does not build a simulation model; it routes agents to read outer task context before local causal claims"
+boundary = "ACCF does not build a simulation model; it routes agents to read outer task context before local causal claims"
 
 [[pattern]]
 id = "situation-awareness-task-state"
@@ -232,4 +205,4 @@ used_for = [
   "active lane and goal awareness",
   "projection of next-step effects before action",
 ]
-boundary = "CBH does not measure human situation awareness; it adapts the pattern into an agent task-context check"
+boundary = "ACCF does not measure human situation awareness; it adapts the pattern into an agent task-context check"

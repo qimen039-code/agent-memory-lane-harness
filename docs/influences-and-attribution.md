@@ -1,6 +1,6 @@
 # Influences And Attribution
 
-Claim Boundary Harness is a composed framework. Some parts are independent
+Agent Cognitive Continuity Framework is a composed framework. Some parts are independent
 design choices in this repository, and some parts are adapted from public
 projects or established engineering patterns. This page keeps that boundary
 explicit.
@@ -36,16 +36,10 @@ deployment notes.
 | Structured provenance | Carry source, confidence, and derivation fields with reusable memory. | Provenance fields do not make a claim true; they preserve the evidence boundary. |
 | Meta-first retrieval | Read summaries and indexes before opening deep payloads. | This is a retrieval discipline, not a guarantee of semantic correctness. |
 | Project manuals and wiki-style knowledge bases | Keep stable module maps, commands, conventions, and interface notes close to the repository. | Static notes are source-prior orientation aids until checked against files, tests, or other evidence. |
-| Structural causal models and do-calculus, including Judea Pearl's causal-graph work: https://arxiv.org/abs/1210.4852 | Separate observation, intervention, counterfactual-style reasoning, and causal-effect claims. This informs the four-level causal-attribution boundary. | CBH does not perform formal causal identification or claim statistical causal proof from text alone. |
-| Systems thinking and system dynamics, including Meadows/Forrester-style feedback, stock/flow, delay, and leverage-point framing | Prevent local symptoms from being treated as the whole system; inform `global_task_context_gate` and root-cause cleanup boundaries. | CBH does not build a simulation model or prove system dynamics; it only routes agents to read outer task context before local causal claims. |
-| Situation awareness research, including Endsley's perception/comprehension/projection model | Treat current task state, active lane, goal, and projection of next effects as part of the context needed before action. | CBH does not measure human situation awareness; it adapts the pattern into an agent task-context check. |
-| Long-context position-sensitivity research, including Liu et al. "Lost in the Middle": https://arxiv.org/abs/2307.03172 | Position risk, middle-safe reading, and evidence-window design. | CBH does not solve model attention bias; it uses bounded rereading and evidence placement as a mitigation. |
-
-## Non-GitHub Client Artifact References
-
-| Source | Absorbed or adapted ideas | Boundary |
-| --- | --- | --- |
-| Doubao built-in finance and market-analysis skills, inspected as local client skill artifacts on 2026-06-25 | Staged contract loading, source/facts/payload separation, evidence lanes, deterministic scaffold/derive/lint/repair/verify flows, check-only render gates, two-stage artifact delivery, domain scoring as an advisory rubric, domain source-tier catalogs, and external-model structured-JSON filler boundaries. | No Doubao code, prompt text, templates, proprietary schema, data-source list, or finance-domain rules are vendored or copied. The reference is source-prior design input only; local harness behavior remains independently implemented and must be validated by this repository's own tests. |
+| Structural causal models and do-calculus, including Judea Pearl's causal-graph work: https://arxiv.org/abs/1210.4852 | Separate observation, intervention, counterfactual-style reasoning, and causal-effect claims. This informs the four-level causal-attribution boundary. | ACCF does not perform formal causal identification or claim statistical causal proof from text alone. |
+| Systems thinking and system dynamics, including Meadows/Forrester-style feedback, stock/flow, delay, and leverage-point framing | Prevent local symptoms from being treated as the whole system; inform `global_task_context_gate` and root-cause cleanup boundaries. | ACCF does not build a simulation model or prove system dynamics; it only routes agents to read outer task context before local causal claims. |
+| Situation awareness research, including Endsley's perception/comprehension/projection model | Treat current task state, active lane, goal, and projection of next effects as part of the context needed before action. | ACCF does not measure human situation awareness; it adapts the pattern into an agent task-context check. |
+| Long-context position-sensitivity research, including Liu et al. "Lost in the Middle": https://arxiv.org/abs/2307.03172 | Position risk, middle-safe reading, and evidence-window design. | ACCF does not solve model attention bias; it uses bounded rereading and evidence placement as a mitigation. |
 
 ## Project Contributions
 

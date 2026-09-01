@@ -1,7 +1,7 @@
 # Agent Self-Deployment Map
 
 This is the required pre-deployment map for an agent installing or adapting
-Claim Boundary Harness (CBH). Read it before copying files, editing a host
+Agent Cognitive Continuity Framework (ACCF). Read it before copying files, editing a host
 configuration, or claiming that a capability is active.
 
 ## Core Rule
@@ -12,7 +12,7 @@ surfaces, and verify every claimed capability before adapting it. Do not
 cherry-pick individual capability files during initial deployment. Repository
 presence is not deployment evidence.
 
-CBH's routing, memory, retrieval, correction, and verification components are
+ACCF's routing, memory, retrieval, correction, and verification components are
 designed to exchange bounded context and evidence as one control loop. Removing
 one part can break those links and leave the remaining parts less useful than
 their isolated file list suggests. A runtime profile may exclude public-source
@@ -81,16 +81,11 @@ call when the native hook cannot observe that surface. It does not parse the
 surrounding JavaScript, grant permission, deny, freeze, write memory, or mutate
 policy.
 
-### C. Host Adapter Components
+### C. Codex Integration Components
 
 | Profile | Required adapter surface | Boundary |
 | --- | --- | --- |
 | `codex-local-minimal` | root instruction, compiled policy, direct gates, action consumer, correction closure | hook activation still requires the exact installed Codex lifecycle |
-| `workbuddy-hook-minimal` | WorkBuddy Python package, wrappers, compiled policy, correction closure | default prompt advisory; PreToolUse disabled until host-protocol verification |
-| `workbuddy-loop-integration-sdk` | hook profile plus agent-loop contract, action consumer, compatibility manifest | host consumes every action and returns a complete receipt |
-
-Do not mix adapter claims. A passing WorkBuddy unit test does not prove Codex,
-Claude Code, or another host loaded the same lifecycle surface.
 
 ### D. Build And Maintenance Files
 
@@ -104,7 +99,7 @@ dangerous_delete_guard.py
 validate_policy.ps1
 tools/cbh_doctor.py
 tests/
-integrations/workbuddy-python-runtime/tests/
+tests/test_codex_deployment_profile.py
 ```
 
 Keep the TOML authoring source and compiler together in a source checkout. The
@@ -162,7 +157,6 @@ runtime does not activate capabilities.
 | model-loop integration active | complete host-owned action-consumption receipt |
 | correction active | known historical regression rewritten, verifier passes, invariants preserved |
 | correction fallback active | no-match and forced verifier/module failure both produce silent no-op |
-| WorkBuddy PreToolUse active | exact target version confirms rewrite plus native permission semantics |
 | client compatibility current | checks rerun after client or hook-configuration changes |
 
 If any row lacks evidence, downgrade it to advisory, reference-only, or

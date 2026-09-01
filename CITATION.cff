@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use or adapt Claim Boundary Harness, please cite this repository."
-title: "Claim Boundary Harness: A Model-Facing Capability Harness for LLM Agent Workflows"
+message: "If you use or adapt Agent Cognitive Continuity Framework, please cite this repository."
+title: "Agent Cognitive Continuity Framework: Memory, Execution-State, and Attention Continuity for LLM Agent Workflows"
 authors:
   - name: "qimen039-code"
 version: "1.2.7"
@@ -11,10 +11,11 @@ url: "https://github.com/qimen039-code/claim-boundary-harness"
 license: "MIT"
 keywords:
   - agent workflows
-  - claim verification
+  - agent cognitive continuity
   - memory continuity
-  - risk routing
+  - execution-state continuity
+  - sustained attention
   - provenance
-  - correction accumulation
+  - correction reuse
   - model-agent context
-abstract: "Claim Boundary Harness is a model-facing capability harness for LLM agent workflows. It helps the host model route tasks, retrieve bounded source-preserving context, reuse verified corrections, and check claim or risk boundaries while the model retains planning, tool-use, semantic-judgment, recovery, and final-answer ownership."
+abstract: "Agent Cognitive Continuity Framework is an external model-supporting framework for LLM agent workflows. It helps the host model preserve source-linked memory, execution state, task-wide constraints, and functional attention continuity across long work while the model retains planning, tool-use, semantic-judgment, recovery, and final-answer ownership."

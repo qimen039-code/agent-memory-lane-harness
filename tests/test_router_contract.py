@@ -18,6 +18,9 @@ CORE_R3_CONFORMANCE = json.loads(
 CORE_R3_CASES = CORE_R3_CONFORMANCE["cases"]
 POWERSHELL = shutil.which("pwsh") or shutil.which("powershell")
 BASH = shutil.which("bash") if os.name != "nt" else None
+ROUTER_TEST_CWD = Path(
+    os.environ.get("TEMP") or os.environ.get("TMP") or ROOT.parent
+) / "accf-router-contract-project"
 
 
 def run_json(args: list[str], *, allowed_exit_codes: set[int] | None = None, env: dict[str, str] | None = None) -> tuple[int, dict]:
@@ -56,7 +59,7 @@ def run_router(task: str) -> dict:
             "-TaskText",
             task,
             "-Cwd",
-            str(ROOT / "path with spaces" / "project"),
+            str(ROUTER_TEST_CWD),
             "-ReceiptMode",
             "diagnostic",
         ]
@@ -771,7 +774,7 @@ ROUTER_CASES = [
     },
     {
         "id": "TC-009p",
-        "task": "这次 router 和 policy 更新要保持环环相扣，只更新 Codex 和 WorkBuddy，不更新 Bash",
+        "task": "这次 router、policy、AGENTS 与 Codex hook 更新要保持环环相扣，不更新 Bash",
         "risk": "R4",
         "gates": ["linked_surface_sync_gate"],
         "expect_contains": {
@@ -1387,7 +1390,7 @@ def test_router_requires_external_evidence_for_uncertain_design_discussion() -> 
 
 
 def test_router_records_route_issue_and_requires_external_evidence_for_linked_current_mechanism() -> None:
-    payload = run_router("路由问题，进行记录，改进：用户给了外链且涉及 Claude 现势机制和第三方 XTrace 口径，不能当官方事实")
+    payload = run_router("路由问题，进行记录，改进：用户给了外链且涉及现势产品机制和第三方 XTrace 口径，不能当官方事实")
     assert payload["risk_level"] == "R4"
     assert payload["record_intent"] == "inferred_reusable_error"
     assert payload["memory_need"] == "common_error_corpus"

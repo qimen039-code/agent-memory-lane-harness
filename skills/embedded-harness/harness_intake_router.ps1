@@ -423,7 +423,7 @@ function Get-TargetSurface {
   }
   if (Test-TaskContainsAny @("git commit", "git push", "commit", "push")) { return "git_action" }
   if (Test-TaskContainsAny @("tool proxy", "tool call", "shell_command", "command")) { return "tool_call" }
-  if (Test-TaskContainsAny @("WorkBuddy", "Claude Code", "adapter", "client update")) { return "adapter" }
+  if (Test-TaskContainsAny @("Codex", "adapter", "client update")) { return "adapter" }
   if (Test-TaskContainsAny @("public", "README", "GitHub", "open source", "repo", "repository", "whiteboard")) { return "public_docs" }
   if (Test-TaskContainsAny @("conversation ledger", "session ledger", "raw session", "raw session JSONL", "evidence_refs", "time_anchors", "segments.jsonl", "turns.jsonl", "sessions.jsonl", "对话账本", "会话账本", "原始对话日志", "证据指针", "时间锚点")) { return "conversation_ledger" }
   if (Test-TaskContainsAny @("internal", "private", "local maintainer", "local-only")) { return "private_rule" }

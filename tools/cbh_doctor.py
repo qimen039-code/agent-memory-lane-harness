@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot adoption diagnostics for Claim Boundary Harness.
+"""One-shot adoption diagnostics for Agent Cognitive Continuity Framework.
 
 This tool is a read-only preflight check. It does not install packages, change
 hooks, edit configuration, or claim runtime enforcement for a host agent. It
@@ -409,7 +409,7 @@ def check_docs_alignment(root: Path) -> Check:
 
 def render_markdown(report: dict[str, Any]) -> str:
     lines = [
-        f"# Claim Boundary Harness Doctor",
+        f"# Agent Cognitive Continuity Framework Doctor",
         "",
         f"Status: `{report['status']}`",
         "",
@@ -447,7 +447,7 @@ def build_report(root: Path) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run local Claim Boundary Harness adoption diagnostics.")
+    parser = argparse.ArgumentParser(description="Run local Agent Cognitive Continuity Framework adoption diagnostics.")
     parser.add_argument("--repo-root", default=".", help="Repository root to inspect.")
     parser.add_argument("--json", action="store_true", help="Print JSON instead of a compact text summary.")
     parser.add_argument("--markdown-output", help="Optional path for a markdown report.")

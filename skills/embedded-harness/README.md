@@ -37,9 +37,9 @@ Design boundaries:
 - Do not wrap every tool call. Invoke correction only for a current candidate whose surface and profile can be mechanically identified.
 - Memory retrieval is meta-first: read `_META_INDEX.md`, a memory summary, or a router manifest before opening category indexes or capsule payloads.
 - `memory_source_hints` bind retrieval to exact active roots. `harness_action_consumer.py` promotes exact record or anchor matches into compact model context; bounded weaker candidates are returned to the host model for semantic reranking and do not demote an exact match into mandatory manual review.
-- `action_bindings` describe work for the host model agent. They do not make CBH an autonomous task runner and are not completion evidence until the matching model/tool path returns a receipt.
+- `action_bindings` describe work for the host model agent. They do not make ACCF an autonomous task runner and are not completion evidence until the matching model/tool path returns a receipt.
 - `task_continuity.py` is a process-local continuity reducer and adaptive transport worker. For an active long/tool/write task it keeps one stable global goal ahead of verified progress, the latest local delta, resumable side tasks, and exact reusable-source refs. An unmatched turn preserves that frame for semantic review instead of becoming a new task: the host model can treat it as a global-goal delta, a bounded side conversation that is answered without replacing the global goal, or an explicit global replacement that still needs current-frame evidence. An explicit return resumes the preserved global task. It stays dormant for answer-only turns with no active frame, stores no chain-of-thought or authority, and requires a verified host adapter before its context can be called automatically model-visible.
-- `engineering_execution.py` materializes only a routed engineering profile: tracer-bullet frontier and blocking edges, a reversible deep-module freeze/temporary-isolation probe, an invocation envelope that distinguishes a claim from a host-bound actual caller, or a two-adapter seam check. The isolation probe adapts the deletion thought experiment, and the seam criterion is adapted directly, from `mattpocock/skills` `codebase-design`; tracer-bullet delivery and invocation topology are local CBH profiles. The probe itself performs no mutation and requires an external executor to restore state and produce an audit receipt. All receipts are advisory, nonpersistent, and grant no authority; a seam remains `candidate_real` until non-model producer hashes are trusted by the caller.
+- `engineering_execution.py` materializes only a routed engineering profile: tracer-bullet frontier and blocking edges, a reversible deep-module freeze/temporary-isolation probe, an invocation envelope that distinguishes a claim from a host-bound actual caller, or a two-adapter seam check. The isolation probe adapts the deletion thought experiment, and the seam criterion is adapted directly, from `mattpocock/skills` `codebase-design`; tracer-bullet delivery and invocation topology are local ACCF profiles. The probe itself performs no mutation and requires an external executor to restore state and produce an audit receipt. All receipts are advisory, nonpersistent, and grant no authority; a seam remains `candidate_real` until non-model producer hashes are trusted by the caller.
 - Host adapters should explicitly request compact receipts. The raw PowerShell router keeps its legacy diagnostic default for callers that omit `ReceiptMode`; `-ReceiptMode compact` is the bounded runtime path. Adapter-facing task-continuity responses serialize the capsule and evidence entry once, while transport receipts expose evidence, control, and total budgets. Oversized model context is hash-bound and paged instead of silently truncated.
 - Static knowledge retrieval is index-first: read `_STATIC_KNOWLEDGE_INDEX.md` before opening a project manual page, and treat static notes as `source_tag: static_knowledge` / `belief_status: source_prior` until checked.
 - `behavior_correction_gate.py` returns a task-local receipt; `behavior_correction_hook.py` may return one verified `allow + updatedInput` rewrite for an accepted deterministic profile.
@@ -68,7 +68,7 @@ routing receipt
 Authorization is bound to one concrete event, one scope, and one use. It is
 consumed by the approved operation and cannot be replayed or expanded. Human
 authorization accepts the disclosed risk for that exact operation; it does not
-certify safety or make CBH responsible for the operation's consequences.
+certify safety or make ACCF responsible for the operation's consequences.
 
 Receipt fields: task type, target surface, audience, project lane, risk level, semantic ambiguity, module need, memory need, memory mode, memory lane, memory source hints, action bindings, task continuity decision, engineering execution profiles, record intent, external need, claim risk, projectization decision, conversation memory decision, link intent, receipt profile, and required gates. Runtime adapters can expose `compact_runtime` by default and expand only for governance or debug cases.
 
@@ -110,7 +110,7 @@ Recommended meta index fields: lane, scope, category, record type, status, retri
 
 Memory recording is routed separately from memory reading. Use `common_error_corpus` for lightweight recurring error-and-solution samples with symptom, cause, applied solution, prevention, validation, and evidence. Use paired `ERR-*` / `SOL-*` records for explicit, repeated, or high-impact self-reflection incidents.
 
-`task_memory_checkpoint.py` closes the bounded handoff from task working state to long-term project or conversation history. `prepare` is read-only and accepts only a fully verified retired `.cumcwork` task; it emits a hash-bound candidate that excludes plans, hidden reasoning, raw tool output, and authority. `promote` is a separate caller-owned memory-write action. It synchronously appends the canonical v3 record, checks the store, and proves exact meta-first retrieval before returning `searchable_ready`. CBH does not run a background derivation queue for this path, and candidate creation never authorizes promotion.
+`task_memory_checkpoint.py` closes the bounded handoff from task working state to long-term project or conversation history. `prepare` is read-only and accepts only a fully verified retired `.cumcwork` task; it emits a hash-bound candidate that excludes plans, hidden reasoning, raw tool output, and authority. `promote` is a separate caller-owned memory-write action. It synchronously appends the canonical v3 record, checks the store, and proves exact meta-first retrieval before returning `searchable_ready`. ACCF does not run a background derivation queue for this path, and candidate creation never authorizes promotion.
 
 Reusable memory capsules should carry source-monitoring fields: `source_tag` `belief_status` `confidence` `derived_from` `source_monitoring` `lifecycle` `belief_trace_summary`. The router decides whether memory is needed; the capsule schema preserves the source and status boundary after the route chooses to write or update memory.
 
@@ -162,8 +162,6 @@ bash ./bash/harness_claim_schema_verifier.sh --claim-json '{"claim_type":"archit
 ```
 
 Bash scripts require `jq`. They are reference adapters, not a package-manager distribution.
-
-The experimental WorkBuddy-oriented Python adapter lives outside this skill folder at `../../integrations/workbuddy-python-runtime`. It reuses `embedded_harness_policy.json` but is not part of the core PowerShell/Bash script surface.
 
 Exit codes:
 

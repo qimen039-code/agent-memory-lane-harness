@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any
 
 
-ADAPTER_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = Path(__file__).resolve().parents[3]
-PROFILE_PATH = ADAPTER_ROOT / "deployment-profiles.json"
+INTEGRATION_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PROFILE_PATH = INTEGRATION_ROOT / "deployment-profile.json"
 
 
 def load_profiles() -> dict[str, Any]:
@@ -61,7 +61,7 @@ def stage(profile_id: str, output: Path) -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="List or stage a minimal CBH deployment profile.")
+    parser = argparse.ArgumentParser(description="List or stage a local deployment profile.")
     parser.add_argument("--profile", required=True)
     parser.add_argument("--list", action="store_true", help="Print the resolved file list without writing files.")
     parser.add_argument("--output", type=Path, help="Empty destination directory for a staged bundle.")

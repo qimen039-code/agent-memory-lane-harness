@@ -112,7 +112,7 @@ changes the action path.
 | Scope | Path or trigger | Router skill / file | Status | Notes |
 | --- | --- | --- | --- | --- |
 | Shared troubleshooting | agent errors, tool failures, skill matrix updates, reusable incidents | `skills/troubleshooting-skill-matrix/SKILL.md` | active | Routes to semantic anchors and paired ERR/SOL ledgers. |
-| Embedded harness | nontrivial task intake, direct-outcome-first routing, memory isolation, external research trigger, claim schema, policy validation | `skills/embedded-harness/README.md` | active | Low-cost deterministic entry route; PowerShell and WorkBuddy Python expose the direct-outcome action contract, while Bash remains a reference route pending host validation. |
+| Embedded harness | nontrivial task intake, direct-outcome-first routing, memory isolation, external research trigger, claim schema, policy validation | `skills/embedded-harness/README.md` | active | Low-cost deterministic entry route; PowerShell and the Codex hook surface expose the direct-outcome action contract. |
 | Example project | `<PROJECT_ROOT>`, `EXAMPLE_PROJECT` | `<PROJECT_ROOT>/AGENTS.md` or a future project router skill | template | Replace with real project details after adoption. |
 
 ## Project Router Manifest Contract

@@ -2,7 +2,7 @@
 
 Use this guide to adapt the public runtime core to your own model-agent environment.
 
-CBH is an assistance layer inside the host agent loop, not a standalone task
+ACCF is an assistance layer inside the host agent loop, not a standalone task
 engine. Preserve the host model as the owner of planning, semantic decisions,
 tool use, recovery, and the final response.
 
@@ -112,7 +112,7 @@ Stronger setups can run:
 - claim schema verifier before final strong claims;
 - high-risk checks before tool calls.
 
-When routing selects external research, the model agent—not a CBH background
+When routing selects external research, the model agent—not a ACCF background
 worker—calls the available source tools and records citations or a source
 ledger before making current or strong claims.
 
@@ -126,7 +126,7 @@ Also make the model-layer pre-action control plane mandatory:
    calling the executable tool action. Resume only after exact human
    authorization for one concrete event, one declared scope, and one use. A
    later or materially changed risky action requires a new authorization. The
-   operator accepts the disclosed risk for the authorized operation; CBH does
+   operator accepts the disclosed risk for the authorized operation; ACCF does
    not certify it as safe or assume responsibility for its consequences.
 
 When a self-check finds memory pollution, target pollution, dirty-tree debt, or
@@ -192,16 +192,9 @@ Status contract:
 
 For Bash environments, use the scripts under `skills/embedded-harness/bash`. They require `jq` and share the same `embedded_harness_policy.json`.
 
-For hosts that own an in-process Python agent loop, `integrations/workbuddy-python-runtime` is a small reference adapter.
-It reuses the same policy file and exposes Python functions for routing, memory isolation, claim checks, and bounded action contracts.
-It is not automatically wired into WorkBuddy or any other client. Prompt
-routing supplies model-layer decisions, including a mandatory stop before
-unauthorized protected actions; it does not independently block WorkBuddy tool
-execution. Optional PreToolUse correction is disabled until the exact host's
-rewrite and permission semantics are verified. Recording or voice input must
-arrive as transcript text before the adapter can route it.
-
-Adapter validation is local by default. Do not claim PowerShell, Bash/macOS/Linux, or WorkBuddy Python compatibility until you have run the relevant smoke checks on the target device and client version.
+Integration validation is local by default. Run the profile, policy, hook, and
+fresh-task checks against the installed Codex version before reporting a
+capability as active.
 
 For runtime/client compatibility, maintain a small manifest using [version-compatibility-management.md](version-compatibility-management.md) and `templates/adapter-contract/compatibility.manifest.json`. Refresh it only after adapter install, client update, hook or wrapper edits, failed smoke tests, or explicit user request.
 

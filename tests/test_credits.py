@@ -20,10 +20,9 @@ def test_credits_toml_is_machine_readable() -> None:
     assert payload["schema_version"] == "credits/v1"
     assert payload["influence"]
     assert payload["pattern"]
-    assert payload["client_artifact_reference"]
 
 
-@pytest.mark.parametrize("entry_type", ["influence", "pattern", "client_artifact_reference"])
+@pytest.mark.parametrize("entry_type", ["influence", "pattern"])
 def test_credit_entries_have_required_boundaries(entry_type: str) -> None:
     payload = tomllib.loads((ROOT / "CREDITS.toml").read_text(encoding="utf-8"))
     for entry in payload[entry_type]:
@@ -39,15 +38,4 @@ def test_public_influence_entries_have_urls_and_non_adoption_boundaries() -> Non
         assert entry["url"].startswith("https://github.com/")
         assert entry["source_type"] == "public_github"
         assert entry["not_adopted"]
-        assert entry["docs_ref"] == "docs/influences-and-attribution.md"
-
-
-def test_client_artifact_references_are_source_prior_and_do_not_copy_assets() -> None:
-    payload = tomllib.loads((ROOT / "CREDITS.toml").read_text(encoding="utf-8"))
-    for entry in payload["client_artifact_reference"]:
-        assert entry["source_type"] == "local_client_artifact"
-        assert entry["observed_at"]
-        assert entry["not_adopted"]
-        assert "source-prior" in entry["boundary"]
-        assert "copied" in entry["boundary"]
         assert entry["docs_ref"] == "docs/influences-and-attribution.md"

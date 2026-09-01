@@ -4,13 +4,13 @@ Use this file as the always-on, low-cost front door before loading large histori
 
 This is a generic foundation file. It does not contain project-specific policy, private memory, or target-agent adapter instructions. Add those only inside the adopting workspace.
 
-CBH augments the host model agent; it is not an independent task engine. The
+ACCF augments the host model agent; it is not an independent task engine. The
 model remains responsible for planning, semantic judgment, tool use, recovery,
 and the final answer. Router, retrieval, and verifier helpers may compile
 bounded context or check a declared boundary, but they must return that result
 to the model rather than taking ownership of the user's task.
 
-Before installing or adapting CBH, an agent must read
+Before installing or adapting ACCF, an agent must read
 `docs/agent-deployment-map.md`, select one complete declared deployment
 profile, stage its entire resolved dependency closure, and keep the generated
 bundle receipt. Do not cherry-pick capability files during initial deployment;
@@ -356,7 +356,7 @@ artifacts merely because it is related.
 
 When the router emits `perform_external_research_route`, the host model agent
 must call the available search/browser/source tools and retain citations or a
-source ledger. CBH does not run an independent crawler or background learning
+source ledger. ACCF does not run an independent crawler or background learning
 process, and an action binding is not completion evidence until the model-agent
 tool path returns evidence.
 

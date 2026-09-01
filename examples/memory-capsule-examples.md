@@ -115,11 +115,9 @@ validation:
   - claim verifier accepts a complete claim record
 caveats: Synthetic example only. Each runtime needs its own adapter check.
 applicable_boundaries:
-  - Codex
-  - Claude Code
-  - other local agent clients with adapter paths
+  - Codex with verified local adapter paths
 non_applicable_boundaries:
-  - hosted-only agents with no local adapter surface
+  - environments without the referenced local paths
 paired_error_ids:
   - ERR-EXAMPLE-CLIENT-DRIFT-001
 future_reuse_rule: Convert repeated update failures into one project-neutral adapter check, not many overlapping skills.

@@ -38,7 +38,7 @@ claims that a system can self-correct toward an objective optimum.
 
 ## Route Outcomes
 
-| Outcome | Use when | CBH behavior |
+| Outcome | Use when | ACCF behavior |
 | --- | --- | --- |
 | `mechanical_verifier_path` | An independent verifier exists and is inspectable. | Use tests, proof checks, exact comparison, reproducible measurement, or a small evaluator. |
 | `verifier_audit_path` | A proposed verifier exists but may hide semantic or preference judgment. | Audit the evaluator source, labels, rubric, scorer, and failure cases before using it as a target. |

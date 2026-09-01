@@ -2,9 +2,9 @@
 
 Run these commands from the repository root.
 
-These checks are smoke tests for the reference package, not a full compatibility matrix. Re-run the relevant commands on the exact Windows, macOS/Linux, WorkBuddy, Codex, Claude Code, or other agent runtime you plan to use.
-
-Claude Code note: this package has not yet completed a full deployment validation inside an installed Claude Code client. The Claude Code page is a reference mapping. Treat local behavior as unverified until the installed client passes instruction-load, allowed-action, blocked-action, and bypass-surface checks.
+These checks are smoke tests for the reference package. Re-run the relevant
+commands against the installed Codex version, Windows environment, PowerShell
+runtime, and configured hook surface.
 
 ## GitHub Actions Smoke Workflow
 
@@ -15,7 +15,6 @@ Claude Code note: this package has not yet completed a full deployment validatio
 - `cbh-doctor` read-only adoption diagnostics;
 - TOML policy-authoring drift checks;
 - pytest contract checks for automatically verifiable `TC-xxx` cases and machine-readable credits;
-- WorkBuddy Python adapter unit tests.
 
 The workflow is intentionally not a full OS/runtime compatibility matrix. It is a low-cost guard that checks the reference package still runs and returns expected gate decisions.
 
@@ -339,31 +338,9 @@ Expected highlights:
 - external research gate returns `needs_external_research: false`.
 
 
-## 8. WorkBuddy Python Runtime Adapter
-
-Run this if Python is available:
-
-```bash
-python -m unittest discover -s integrations/workbuddy-python-runtime/tests
-```
-
-Expected highlight:
-
-- all tests pass.
-
-This validates the in-process Python decision helper only. It does not prove that WorkBuddy has wired the adapter into its internal model action loop, and it does not prove compatibility across WorkBuddy versions.
-
-The test suite also covers the reference WorkBuddy hook runner:
-
-- `UserPromptSubmit` stores the original prompt, stays silent for ordinary low-risk context, and returns boundary context only when needed;
-- host-provided recording transcripts are extracted as prompt text while raw media remains ignored;
-- `PreToolUse` applies only an accepted, mechanically verified input correction and otherwise returns a silent no-op;
-- R5 and unresolved conversation-link signals are returned to the model/host flow as context; the reference runner does not create a CBH-owned permit, denial, or replay ledger;
-- non-command Write/Edit content that merely mentions high-risk words is not treated as an executable command;
-- no bundled `Stop` / final-answer blocker is installed; final claim boundaries remain model/host governed unless an adopter separately wires and tests such a surface.
-
-These are local adapter tests, not proof that a specific WorkBuddy installation has enabled hooks.
-
 ## Notes
 
-These tests prove only that the public runtime core and reference adapter functions run and return expected routing decisions. They do not prove that an adopting agent will honor the gates. Hook, wrapper, tool-proxy, or in-process loop integration is required for stronger enforcement.
+These checks prove that the public runtime core and reference functions return
+expected routing decisions. They do not establish that a particular client
+loads or honors every surface; fresh-task lifecycle evidence is required for
+that claim.

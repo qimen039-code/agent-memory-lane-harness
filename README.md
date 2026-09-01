@@ -1,30 +1,36 @@
 [中文版](./README_zh.md) | English
 
-# Claim Boundary Harness
+# Agent Cognitive Continuity Framework
 
 [![Smoke checks](https://github.com/qimen039-code/claim-boundary-harness/actions/workflows/smoke.yml/badge.svg?branch=main)](https://github.com/qimen039-code/claim-boundary-harness/actions/workflows/smoke.yml)
 [![Zenodo concept DOI](./docs/assets/doi-badge.svg)](https://doi.org/10.5281/zenodo.21189879)
 
 ## In 30 Seconds
 
-Claim Boundary Harness (CBH) is a model-facing control loop for coding agents.
-It keeps the task goal, relevant context, execution evidence, and next action
-connected across planning, tool use, recovery, and final claims. It works beside
-the host model; it is not another AI, a background task runner, or a replacement
-for the model.
+Agent Cognitive Continuity Framework (ACCF) is a model-facing, external
+framework for memory continuity, execution-state continuity, and sustained
+task focus. It keeps the task goal, relevant context, execution evidence, and
+next action connected across planning, tool use, recovery, and final claims. It
+works beside the host model; it is not another AI, a background task runner, or
+a replacement for the model.
 
-In practical terms, CBH helps an agent keep the overall goal visible during a
-long task, continue with traceable context, separate unrelated projects, reuse
-verified corrections, and check evidence before presenting a strong claim. It
-also helps the agent load only the context and capabilities needed for the
-current task instead of turning every request into one large prompt.
+In practical terms, ACCF helps an agent keep the overall goal, current stage,
+reason for acting, acceptance criteria, and relevant memory visible throughout
+a long task. It also keeps unrelated projects separate, preserves traceable
+sources, reuses verified corrections, and loads only the context needed at the
+current stage instead of turning every request into one large prompt.
 
 The host model still plans, reasons, uses tools, recovers from errors, and writes
-the final answer. CBH reduces avoidable failures, but it cannot guarantee
-correctness or eliminate hallucinations. A capability counts as active only
-when the host actually loads and tests the relevant CBH entry points.
+the final answer. ACCF does not alter the model's internal attention weights;
+it aims to create functional continuity by restoring compact, current task
+state at selected execution boundaries. A capability counts as active only
+when the host actually consumes and tests the relevant entry point.
 
-For protected high-risk actions, CBH's first enforcement surface is earlier
+The existing repository URL, `cbh.*` schemas, and `harness_*` filenames remain
+stable compatibility identifiers during the rename. They are not the current
+project definition and do not establish runtime activation.
+
+For protected high-risk actions, ACCF's first enforcement surface is earlier
 than a tool hook: the model-facing control path must stop before forming or
 calling the action, report the exact target, scope, impact, and recovery
 boundary, and wait for exact human authorization. This is a mandatory
@@ -34,7 +40,7 @@ proxy, permission system, or sandbox.
 
 ## Problems It Helps Solve
 
-| Common problem | How CBH helps | Technical entry |
+| Common problem | How ACCF helps | Technical entry |
 | --- | --- | --- |
 | A long task drifts, or the agent treats one finished subtask as the whole goal | Keeps the task goal, current scope, and final checks connected | Task routing, event re-evaluation, final claim check |
 | A small user-visible change turns into an unrequested framework, policy, or protective layer before the result exists | Routes the first substantive mutation to the requested surface and requires evidence before scope expansion | `direct_outcome_first_gate`, action binding, bounded expansion conditions |
@@ -45,42 +51,37 @@ proxy, permission system, or sandbox.
 | Too much history, too many skills, or too many tools crowd the model context | Selects the smallest sufficient context and activates capabilities only when needed | Context selection, skill lifecycle |
 | A client or tool update breaks an earlier integration | Provides checks for the real host entry points so only passing surfaces are reported as active | Compatibility and lifecycle checks |
 
-## Choose How To Use CBH
+## Choose How To Use ACCF
 
-CBH is not something every coding-agent user must install. Choose the smallest
+ACCF is not something every coding-agent user must install. Choose the smallest
 use level that matches the problem you actually have; these are usage modes,
 not a maturity ladder.
 
-| Use level | When it fits | Recommended action | Is CBH deployed? |
+| Use level | When it fits | Recommended action | Is ACCF deployed? |
 | --- | --- | --- | --- |
 | Read and reference | You want ideas for prompts, memory boundaries, handoffs, evidence checks, or agent governance | Read the relevant README or contract and cite the source when you reuse it | No |
-| Reuse a design pattern | You need one bounded idea in your own system, such as project-scoped memory or source-preserving handoff | Adapt and test that pattern in your own implementation; retain the applicable attribution and license notice | No; this is an adaptation inspired by CBH |
+| Reuse a design pattern | You need one bounded idea in your own system, such as project-scoped memory or source-preserving handoff | Adapt and test that pattern in your own implementation; retain the applicable attribution and license notice | No; this is an adaptation inspired by ACCF |
 | Complete local deployment | You repeatedly encounter long-task drift, cross-project memory bleed, weak evidence claims, or recurring execution mistakes | Use one complete declared deployment profile, adapt it to the real host, and run the acceptance checks | Only after the host lifecycle checks pass |
 | Host or product integration | You build or maintain an agent runtime, adapter, or team control plane | Integrate the model-loop contracts, receipts, local overlays, and supported hook surfaces with versioned tests | Only the verified surfaces count as active |
 
-Reading or borrowing from CBH is a valid outcome. You do not need to deploy the
+Reading or borrowing from ACCF is a valid outcome. You do not need to deploy the
 framework merely because one contract or pattern is useful. The complete-profile
-rule applies when you choose to install CBH as an integrated runtime and claim
+rule applies when you choose to install ACCF as an integrated runtime and claim
 that its linked capabilities are active.
 
 ## Quick Start
 
-If you selected complete local deployment or host integration, you do not need
-to understand every CBH contract before starting. This path is for Codex-class
-IDE or terminal agents that can read workspace instructions and run local tools.
-Open a new task in the agent you want to use, give it access to a local
-workspace, and paste the following single-line deployment request:
+If you selected complete local deployment or integration, you do not need to
+understand every ACCF contract before starting. Open a new Codex task with
+access to a local workspace and paste the following deployment request:
 
 ```text
-Deploy the latest main branch of Claim Boundary Harness from https://github.com/qimen039-code/claim-boundary-harness into this coding-agent environment: read docs/agent-deployment-map.md first; inspect this host's real instruction, skill, command, hook, model-loop, permission, and sandbox surfaces; show the exact write targets and back up existing configuration; select one complete declared deployment profile and stage its full resolved dependency closure; after any required approval, adapt only the surfaces this host actually supports; initialize private local overlays from the public templates without publishing local paths or memory; run the compiler, validator, doctor, relevant profile tests, and one fresh-task lifecycle smoke test; then return the deployment receipt with checked_available, checked_missing, and checked_blocked, and never claim that copied files alone are active.
+Deploy the latest main branch of Agent Cognitive Continuity Framework from https://github.com/qimen039-code/claim-boundary-harness into this Codex environment: read docs/agent-deployment-map.md first; inspect the installed instruction, skill, command, hook, model-loop, permission, and sandbox surfaces; show the exact write targets and back up existing configuration; select the declared deployment profile and stage its full resolved dependency closure; after any required approval, adapt the verified surfaces; initialize private local overlays from the public templates without publishing local paths or memory; run the compiler, validator, doctor, profile tests, and one fresh-task lifecycle smoke test; then return the deployment receipt with checked_available, checked_missing, and checked_blocked, and never claim that copied files alone are active.
 ```
 
-This is an instruction for the coding agent, not a universal shell installer.
-Different clients expose different instruction files, skill registries, hooks,
-permission systems, and tool lifecycles, so the agent must inspect the real host
-before adapting CBH. A local Codex-style host can use `codex-local-minimal` as
-its initial complete baseline; another host may use that profile as an
-integration reference, but not as proof of compatibility.
+The task inspects the installed instruction, skill, hook, permission, sandbox,
+and tool surfaces before adapting paths. Start from the
+`codex-local-minimal` profile.
 
 ### What The Agent Should Do
 
@@ -95,7 +96,7 @@ integration reference, but not as proof of compatibility.
 
 ### Before You Trust The Deployment
 
-- CBH augments the host agent; it is not a separate autonomous application.
+- ACCF augments the host agent; it is not a separate autonomous application.
 - Copying the repository is not activation. The host must actually load the
   instruction entry and call any claimed router, consumer, or hook surface.
 - Preserve existing instructions and configuration with a reviewed patch or
@@ -122,7 +123,7 @@ installation, capability, or compatibility guidance.
 > snippets, and archived documents are not current-version evidence unless the
 > current `main` branch or latest Release explicitly points to them.
 
-> **Deployment integrity note:** CBH is designed as one interdependent control
+> **Deployment integrity note:** ACCF is designed as one interdependent control
 > loop. Start with one complete declared runtime profile and deploy its full
 > dependency closure before adapting it to a host. Do not cherry-pick routing,
 > memory, retrieval, correction, or verification components during initial
@@ -131,13 +132,13 @@ installation, capability, or compatibility guidance.
 > suggest. Documentation, papers, examples, and development tests may remain
 > outside the runtime bundle.
 
-Citation and attribution: if you use, adapt, evaluate, or productize CBH,
+Citation and attribution: if you use, adapt, evaluate, or productize ACCF,
 please cite this repository with `CITATION.cff` and retain `NOTICE.md` plus the
 MIT license notice. The Zenodo concept DOI is
 [10.5281/zenodo.21189879](https://doi.org/10.5281/zenodo.21189879).
 
 The host model remains the planner, tool user, semantic decision-maker, and
-author of the final answer. CBH does not run the user's task independently of
+author of the final answer. ACCF does not run the user's task independently of
 that model. Its deterministic helpers are deliberately narrow: they compile a
 compact route, select indexed context, or verify a declared boundary, then hand
 the result back to the model agent. An optional host-called correction hook may
@@ -149,49 +150,45 @@ memory pollution, and routing gaps should become bounded records, tests, or
 small policy updates. They should not become an uncontrolled pile of active
 skills, prompts, or summaries that slowly pollute the model context.
 
-It is not tied to one agent runtime. It is a neutral starting point that can be
-mapped into any model-agent host that can read workspace instructions, run
-local helpers, use command or skill folders, or call hooks before tools.
-
-CBH is not:
+ACCF is not:
 
 - a standalone autonomous task engine or background workflow runner;
 - a vector database or semantic-memory backend;
 - a replacement for the host model's reasoning ability;
 - a broad safety sandbox;
 - a prompt-only style guide;
-- a guarantee that every client can hard-block tools.
+- a guarantee that every Codex version exposes the same hook behavior.
 
 The public package is a framework and reference implementation. Actual
-enforcement strength depends on the host runtime, hook surface, local project
-lane configuration, and verification tests run by the adopter.
+enforcement strength depends on the installed Codex runtime, hook surface,
+local project-lane configuration, and verification results.
 
 ### Pre-Action Stop And Human Authorization
 
-CBH separates two meanings that were previously described too broadly as
+ACCF separates two meanings that were previously described too broadly as
 "advisory" versus "hard blocking":
 
 - **Model-layer pre-action stop:** once a protected high-risk action is
   identified, the governed agent must not advance to tool execution without
-  exact human authorization. This is a mandatory transition rule in the CBH
+  exact human authorization. This is a mandatory transition rule in the ACCF
   decision path, even when the host exposes no deny-capable tool hook.
 - **Host-enforced execution stop:** a hook, proxy, permission system, sandbox,
   or operating-system boundary rejects the tool call independently of model
-  compliance. CBH claims this only for paths that were actually wired and
+  compliance. ACCF claims this only for paths that were actually wired and
   tested.
 
 Authorization is bound to one concrete event, one declared scope, and one use.
 It is consumed by that operation and does not authorize a later or materially
 different risky action. When the operator authorizes the exact action after
-receiving its disclosed risks, CBH records that decision boundary but does not
+receiving its disclosed risks, ACCF records that decision boundary but does not
 certify the action as safe or assume responsibility for consequences of that
 authorized operation. The agent must still stay inside the approved scope and
 report the observed result.
 
 ## Technical Overview
 
-Claim Boundary Harness is a small model-facing capability and cognition layer
-for Codex-class host LLM agents. The host model remains responsible for
+Agent Cognitive Continuity Framework is a small model-facing capability and
+cognition layer for Codex tasks. The host model remains responsible for
 planning, tool use, recovery, and the final answer. This repository already contains:
 
 - routing receipts, R0-R5 risk handling, and event-triggered re-evaluation before work starts;
@@ -210,15 +207,15 @@ Fast paths:
 
 | Need | Start here |
 | --- | --- |
-| Decide whether to deploy | [Choose How To Use CBH](#choose-how-to-use-cbh) |
-| Understand CBH quickly | [In 30 Seconds](#in-30-seconds), [Problems It Helps Solve](#problems-it-helps-solve) |
+| Decide whether to deploy | [Choose How To Use ACCF](#choose-how-to-use-cbh) |
+| Understand ACCF quickly | [In 30 Seconds](#in-30-seconds), [Problems It Helps Solve](#problems-it-helps-solve) |
 | See the architecture | [Architecture At A Glance](#architecture-at-a-glance) |
 | Install or adapt | [Quick Start](#quick-start), [Manual Deployment And Verification](#manual-deployment-and-verification), [Agent Self-Deployment Map](docs/agent-deployment-map.md), [docs/adoption.md](docs/adoption.md) |
 | Validate behavior | [docs/test-cases.md](docs/test-cases.md), [docs/reproduction.md](docs/reproduction.md) |
 | Cite or review provenance | [CITATION.cff](CITATION.cff), [NOTICE.md](NOTICE.md), [docs/influences-and-attribution.md](docs/influences-and-attribution.md) |
 | Runtime troubleshooting | [docs/deployment-risk-patterns.md](docs/deployment-risk-patterns.md), [docs/integrations](docs/integrations) |
 
-## CBH Capability Map
+## ACCF Capability Map
 
 | Capability | Primary entry point | Current public status |
 | --- | --- | --- |
@@ -239,16 +236,12 @@ Fast paths:
 | Research route triage | `docs/research-triage-three-questions.md` | Separates mechanical verifiers from governance paths |
 | Interaction error routing | `docs/interaction-error-corpus.md` | One corpus with four isolated control-surface lanes |
 
-WorkBuddy, Doubao, Bash, and other host or platform adaptations are separate
-integration references, not CBH capability entries. Their availability depends
-on the adopter's host interface and local verification.
-
 ## Architecture At A Glance
 
 ```mermaid
 flowchart LR
     U[User task] --> A[Host LLM agent]
-    A --> R[CBH microkernel and router]
+    A --> R[ACCF microkernel and router]
     R --> C[Compact context and action bindings]
     C --> A
     A --> H{Optional verified correction}
@@ -259,10 +252,10 @@ flowchart LR
     A --> F[Final answer]
 ```
 
-## What CBH Adds
+## What ACCF Adds
 
 Most agent memory or harness projects cover one slice: prompt rules, memory
-storage, hooks, retrieval, or test receipts. Claim Boundary Harness connects
+storage, hooks, retrieval, or test receipts. Agent Cognitive Continuity Framework connects
 those slices into one low-cost contract:
 
 - **Claim boundary:** weak evidence stays `source_prior` or `bounded_claim`
@@ -424,7 +417,7 @@ cross-conversation, or archive-to-active memory bleed.
 
 - Reference path: PowerShell scripts. Bash and Python adapters are starting points.
 - The model-layer pre-action stop applies when the host model loads and follows
-  the CBH control path. Host-enforced execution blocking applies only on paths
+  the ACCF control path. Host-enforced execution blocking applies only on paths
   that actually call and honor a deny-capable gate.
 - Client updates can break instruction paths, hooks, runtimes, or skill loading; rerun smoke checks after updates.
 - No memory backend is required. Add one only if it preserves lane isolation and provenance metadata.
@@ -476,10 +469,10 @@ their runtime can actually honor:
   mandatory as a decision chain, but cheap by default through compact and delta
   receipts.
 - **Runtime integration:** PowerShell/Bash decision routers and gates, the
-  direct action consumer, and reference adapters such as the WorkBuddy hook
-  runner. The optional correction hook can rewrite one mechanically verified
+  direct action consumer, and the Codex hook surface. The optional correction
+  hook can rewrite one mechanically verified
   current input but cannot deny, freeze, or grant authority. That narrow hook
-  contract does not remove CBH's mandatory model-layer stop before an
+  contract does not remove ACCF's mandatory model-layer stop before an
   unauthorized high-risk action. Independent execution-time blocking belongs
   to the host's native hook, sandbox, proxy, or permission system.
 - **Memory continuity:** project memory library, conversation memory lane,
@@ -550,7 +543,7 @@ unbounded context growth.
 |   +-- reproduction.md
 |   +-- router-decision-contract.md
 +-- integrations/
-|   +-- workbuddy-python-runtime/
+|   +-- codex-local/
 +-- tests/
 |   +-- test_credits.py
 |   +-- test_codex_session_ledger.py
@@ -592,27 +585,11 @@ unbounded context growth.
     +-- project/
 ```
 
-## Where It Can Be Used
-
-This framework can be adapted to agents that support one or more of these surfaces:
-
-- workspace instruction files
-- project instruction files
-- command or skill folders
-- local script execution
-- tool-call hooks
-- project memory folders
-- wrapper scripts around the agent process
-
-If an agent only reads instruction files, this framework acts as a model-facing workflow contract. A compatible pre-tool hook may apply the narrow verified rewrite protocol, but host authorization remains separate.
-
-Integration examples are intentionally small and conservative:
+## Integration
 
 - [docs/integrations/codex.md](docs/integrations/codex.md)
-- [docs/integrations/claude-code.md](docs/integrations/claude-code.md)
-- [docs/integrations/workbuddy.md](docs/integrations/workbuddy.md)
-- [docs/integrations/doubao.md](docs/integrations/doubao.md)
-- [integrations/workbuddy-python-runtime/README.md](integrations/workbuddy-python-runtime/README.md)
+- [integrations/codex-local/deployment-profile.json](integrations/codex-local/deployment-profile.json)
+- [integrations/codex-local/build-deployment-bundle.py](integrations/codex-local/build-deployment-bundle.py)
 
 ## Why Skills Are Bounded
 
@@ -671,24 +648,14 @@ Detailed contracts:
 
 The public package is a generic framework, reference implementation, synthetic example set, and reproducible test bundle. It must not contain private project names, private memory capsules, local incident histories, or even sanitized traces of one maintainer's local projects.
 
-CBH is intended to improve inside each adopter's own local lane. Adopters should keep their project-specific memory, field notes, solved incidents, and client-specific deployment observations in private overlays or project-local files, then promote only reusable generic rules or tests back into the public package.
+ACCF is intended to improve inside each adopter's own local lane. Adopters should keep their project-specific memory, field notes, solved incidents, and client-specific deployment observations in private overlays or project-local files, then promote only reusable generic rules or tests back into the public package.
 
 This is not broad field validation. Public claims are limited to repository tests, reference scripts, documented contracts, and adapter boundaries that adopters can rerun in their own environments.
 
-Current client boundary:
-
-- **Codex**: reference integration plus source/active harness smoke checks; rerun after client updates.
-- **WorkBuddy**: Python adapter unit tests and hook-runner reference path; not a complete WorkBuddy version or platform certification.
-- **Doubao**: current evidence supports only chat/workspace-scoped advisory demos, not persistent custom-skill or tool registration in the inspected desktop client.
-- **Other clients**: reference mappings only until the target client, instruction surface, hook protocol, permission semantics, and bypass surfaces are tested in that client.
-
-The PowerShell, Bash, and WorkBuddy Python adapters are also not complete compatibility claims.
-PowerShell and the WorkBuddy Python decision layer are covered by repository-side tests and smoke contracts; Bash/mac-style scripts are reference adapters and still need target-shell verification on the adopter's machine.
-The WorkBuddy Python adapter includes a hook runner tested through local unit tests for advisory prompt routing and optional current-input correction. `PreToolUse` is disabled by default until the exact WorkBuddy version's rewrite and permission semantics are verified; `Stop` is not registered by CBH.
-
-The Claude Code integration page is currently a reference mapping, not a completed client-deployment validation. Adopters should confirm which instruction file the installed client reads, whether a pre-tool or command hook exists, whether blocked results are honored, and which surfaces can bypass the wrapper. If any of those checks fail, follow the deployment troubleshooting guide and let the adopting agent localize the problem before claiming hard enforcement.
-
-Receipt profile behavior is covered by the current reproduction checks and WorkBuddy Python adapter tests. Bash and macOS/Linux reference paths still need target-shell verification on the adopter's machine.
+Current integration evidence and post-update checks are documented in
+[docs/integrations/codex.md](docs/integrations/codex.md). Repository tests cover
+the profile resolver, PowerShell routing, memory boundaries, correction
+profiles, task continuity, runtime projection, and documentation contracts.
 
 It also supports independent project lanes. After global routing boundaries are configured, each project can keep its own instructions, memory roots, and incident records. That makes it possible to run separate local chains for separate projects without silent memory bleed, cross-project contamination, or unrelated progress records being mixed together.
 
@@ -700,7 +667,6 @@ The package includes generic synthetic examples that show the intended record sh
 - [examples/memory-capsule-examples.md](examples/memory-capsule-examples.md): project memory capsule, paired error/solution records, claim boundary record, and client-update drift record.
 - [examples/memory-library-demo/_META_INDEX.md](examples/memory-library-demo/_META_INDEX.md): layered memory library demo using meta index, category indexes, capsule status, and supersession.
 - [docs/router-decision-contract.md](docs/router-decision-contract.md): router and dynamic decision receipt contract.
-- [docs/articles/claim-boundary-harness-design.md](docs/articles/claim-boundary-harness-design.md): design note covering claim boundaries, meta-first routing, memory lanes, runtime enforcement limits, deployment pitfalls, and reproduction scope.
 - [docs/declarative-governance-contract.md](docs/declarative-governance-contract.md): small adapter governance contract for stages, authorization boundaries, payload safety, and cost boundaries.
 - [docs/version-compatibility-management.md](docs/version-compatibility-management.md): runtime/client compatibility manifest and drift response rules.
 - [docs/memory-routing-contract.md](docs/memory-routing-contract.md): memory mode, memory lane, record intent, and projectization drift contract.
@@ -725,16 +691,14 @@ The package includes generic synthetic examples that show the intended record sh
 - [docs/format-layering.md](docs/format-layering.md): when to use Markdown, JSON, JSONL, CSV/TSV, non-semantic operational indexes, or generated Markdown.
 - [docs/cost-control-contract.md](docs/cost-control-contract.md): routing field budgets, delta receipts, active-context ceilings, and action-relevant field rules.
 - [docs/archive-and-persona-boundaries.md](docs/archive-and-persona-boundaries.md): optional cold archive, move/copy archive defaults, summary capsule exceptions, and conversation-only persona boundaries.
-- [docs/deployment-risk-patterns.md](docs/deployment-risk-patterns.md): common deployment failures, concrete issue examples, and solution playbooks for WorkBuddy-like hooks, CLI agents, IDE agents, custom orchestrators, hosted agents, and wrapper-only setups.
-- [docs/integrations/doubao.md](docs/integrations/doubao.md): Doubao adaptation boundary notes. Treat persistent custom-skill/tool registration as unverified until the target new chat proves it; CBH is limited to chat/workspace-scoped advisory guidance there.
+- [docs/deployment-risk-patterns.md](docs/deployment-risk-patterns.md): common deployment failures, concrete issue examples, and solution playbooks for instruction, hook, permission, and wrapper surfaces.
 - [docs/examples.md](docs/examples.md): expected gate behavior and how to interpret examples.
 
 ## Manual Deployment And Verification
 
-1. Choose one complete machine-readable profile from
-   `integrations/workbuddy-python-runtime/deployment-profiles.json`. For a
-   local Codex-style agent, start with `codex-local-minimal`.
-2. Use `integrations/workbuddy-python-runtime/scripts/build-deployment-bundle.py`
+1. Choose the `codex-local-minimal` profile from
+   `integrations/codex-local/deployment-profile.json`.
+2. Use `integrations/codex-local/build-deployment-bundle.py`
    with `--profile <name> --list` or `--output <empty-directory>`, and stage the
    profile's entire resolved file set. Do not cherry-pick individual capability
    files or treat repository presence as activation.
@@ -744,20 +708,15 @@ The package includes generic synthetic examples that show the intended record sh
 5. For private machine-local project lanes, copy `skills/embedded-harness/embedded_harness_policy.local.example.json` to `embedded_harness_policy.local.json`, or point `CBH_PROJECT_LANES_FILE` at a private overlay file. Do not commit private local project roots into the public policy JSON.
 6. Optionally fill `templates/static-knowledge-layer/` with a project map,
    entry points, conventions, and interface notes.
-7. Register the skill folders using whatever skill or command mechanism your agent supports.
+7. Register the skill folders through the installed Codex skill or command surface.
 8. Run the intake router before nontrivial work.
 
-Optional skill tuning: adopters may install [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) separately. CBH does not bundle or deploy it.
+Optional skill tuning: adopters may install [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) separately. ACCF does not bundle or deploy it.
 
-For deployment, resolve one complete machine-readable profile in
-`integrations/workbuddy-python-runtime/deployment-profiles.json` and use
-`integrations/workbuddy-python-runtime/scripts/build-deployment-bundle.py` to
-list or stage all of its exact runtime files. Do not remove parts from that
-resolved dependency closure during initial deployment. Runtime profiles may
-exclude papers, articles, research material, examples, and development tests
-because those are not active capability components. WorkBuddy hook-only
-deployments must also report route
-fields that lack an Agent Loop consumer as advisory rather than deployed.
+Resolve the profile before deployment and stage its exact runtime files. Do not
+remove parts from the resolved dependency closure. Runtime profiles may exclude
+papers, research material, examples, and development tests because those are
+not active capability components.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\skills\embedded-harness\harness_intake_router.ps1 -TaskText "fix the script and run benchmark" -Cwd "C:\path\to\project"
@@ -827,7 +786,6 @@ The public runtime core and reference adapters were smoke-tested locally with:
 - Bash smoke checks when `jq` is available;
 - cbh-doctor adoption diagnostics;
 - pytest contract checks for the automatically verifiable `TC-xxx` route cases and machine-readable credits;
-- WorkBuddy Python adapter unit tests for advisory prompt routing, explicit-protocol current-input correction, silent no-op failure handling, model-loop ownership, and bounded memory/claim receipts;
 - package content scan for local project terms and sensitive field names.
 
 See [docs/reproduction.md](docs/reproduction.md) for commands and expected results.
@@ -856,17 +814,12 @@ This is a foundation package, not a complete safety system.
   host-enforced interception, or sandboxing.
 - The trigger lists are intentionally small and should be tuned.
 - The memory format is a template, not a database.
-- Different agents need different adapter files and launch methods.
-- Completed local adaptation/deployment testing currently covers Codex and WorkBuddy. Doubao has a reviewed chat/workspace demo and a prepared native skill package, but current evidence shows no persistent custom-skill load in a later new chat.
-- The Claude Code guide is a reference mapping and has not yet been fully deployment-validated in an installed Claude Code client.
-- The WorkBuddy Python adapter is experimental and is not a complete WorkBuddy compatibility guarantee.
-- Other clients, IDE agents, CLI agents, hosted agents, and custom orchestrators remain unverified reference paths until their exact runtime surfaces are tested.
-- Bash/macOS/Linux support is a reference path until it is tested on the target machine and shell.
+- Hook and script behavior must be rechecked after Codex, PowerShell, or local path changes.
 - There are likely missing cases, rough edges, and workflows we have not considered.
 
 ## Feedback Welcome
 
-If you try this in another agent runtime, a different operating system, or a different project workflow, feedback is welcome. Useful feedback includes:
+If you try this in a Codex project workflow, feedback is welcome. Useful feedback includes:
 
 - unclear rules;
 - missing risk categories;

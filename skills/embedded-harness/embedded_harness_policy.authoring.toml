@@ -1387,8 +1387,6 @@ triggers = [
   "AGENTS sync",
   "memory rule sync",
   "profile field sync",
-  "Codex and WorkBuddy",
-  "Codex/WorkBuddy",
   "环环相扣",
   "联动表面",
   "同步表面",
@@ -1398,9 +1396,6 @@ triggers = [
   "策略同步",
   "规则同步",
   "记忆规则同步",
-  "Codex 和 WorkBuddy",
-  "只更新 codex 和 workbuddy",
-  "主要更新codex和workbuddy",
 ]
 
 [router_decision_contract.issue_prevention_gates.public_private_surface_gate]
@@ -1832,8 +1827,6 @@ triggers = [
   "release date",
   "official fact",
   "official source",
-  "Claude",
-  "Anthropic",
   "官方",
   "官方事实",
   "官方来源",

@@ -27,20 +27,12 @@ The public template is:
 templates/adapter-contract/compatibility.manifest.json
 ```
 
-## Compatibility Is Evidence, Not Assertion
+## Compatibility Evidence
 
-Do not write:
-
-```text
-WorkBuddy supported
-Claude Code supported
-Codex supported
-```
-
-Write:
+Record the inspected runtime and checks:
 
 ```text
-runtime name
+runtime name: Codex
 runtime version checked
 adapter version checked
 hook schema observed

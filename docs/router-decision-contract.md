@@ -78,7 +78,8 @@ The router should compute the full decision internally, then expose the smallest
 | `extended_governance` | Public docs, local harness, adapters, project memory, conversation memory, semantic ambiguity, memory writes, projectization drift, or audience-boundary work. | Full governance receipt fields. |
 | `debug_receipt` | Router debugging, misroute analysis, or user asks for full receipt. | Full receipt plus matched/negated triggers, confidence, and profile reasons. |
 
-This keeps Codex-style, Claude-style, WorkBuddy-style, and custom local adapters cheap while preserving the full whiteboard schema for migration, audits, and public framework work.
+This keeps local Codex execution cheap while preserving the full whiteboard
+schema for migration, audits, and public framework work.
 
 ## Task Continuity Boundary
 

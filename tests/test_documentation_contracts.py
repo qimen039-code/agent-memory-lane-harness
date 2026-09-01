@@ -44,6 +44,9 @@ def test_agent_self_deployment_map_is_required_and_machine_visible() -> None:
     assert relative in read_text("README.md")
     assert relative in read_text("README_zh.md")
     assert relative in read_text("tools/cbh_doctor.py")
+    profiles = json.loads(read_text("integrations/codex-local/deployment-profile.json"))
+    for profile in profiles["profiles"].values():
+        assert profile["required_predeployment_read"] == relative
 
 
 def test_task_checkpoint_consumer_is_declared_in_adapter_contract() -> None:
@@ -76,10 +79,6 @@ def test_bilingual_readme_and_local_overlay_template_are_present() -> None:
     assert policy["local_project_lane_overlay"]["default_filename"] == "embedded_harness_policy.local.json"
     assert "embedded_harness_policy.local.json" in readme
     assert "CBH_PROJECT_LANES_FILE" in readme_zh
-    assert "| WorkBuddy adapter |" not in readme
-    assert "| WorkBuddy adapter |" not in readme_zh
-    assert "not CBH capability entries" in readme
-    assert "不是 CBH 能力项" in readme_zh
 
 
 def test_public_docs_describe_current_nonblocking_runtime_and_existing_minimal_profiles() -> None:
@@ -102,7 +101,7 @@ def test_public_docs_describe_current_nonblocking_runtime_and_existing_minimal_p
 
     for text in (readme, readme_zh):
         assert "codex-local-minimal" in text
-        assert "deployment-profiles.json" in text
+        assert "deployment-profile.json" in text
         assert "build-deployment-bundle.py" in text
     assert "Copy this package into a new workspace" not in readme
     assert "把这个包复制到目标 workspace" not in readme_zh
@@ -165,7 +164,7 @@ def test_citation_notice_are_visible_and_public_report_draft_is_absent() -> None
     assert "最新已打 tag 的 GitHub Release：" in readme_zh
     assert "已删除的历史 tag 链接" in readme_zh
     assert "claim-boundary-harness-technical-report.md" not in readme_zh
-    assert "title: \"Claim Boundary Harness: A Model-Facing Capability Harness for LLM Agent Workflows\"" in citation
+    assert "title: \"Agent Cognitive Continuity Framework: Memory, Execution-State, and Attention Continuity for LLM Agent Workflows\"" in citation
     assert "qimen039-code" in citation
     assert "version: \"1.2.7\"" in citation
     assert "date-released: \"2026-08-24\"" in citation
@@ -203,8 +202,6 @@ def test_memory_feedback_loop_trial_is_optional_and_template_visible() -> None:
     project_meta = read_text("templates/project/memory-library/_META_INDEX.md")
     conversation_meta = read_text("templates/conversation-memory/_META_INDEX.md")
     manifest = json.loads(read_text("templates/adapter-contract/compatibility.manifest.json"))
-    workbuddy_doc = read_text("docs/integrations/workbuddy.md")
-    doubao_doc = read_text("docs/integrations/doubao.md")
 
     for text in [trial, schema, common_error_doc, common_error_template, project_meta]:
         assert "feedback_loop" in text
@@ -242,8 +239,6 @@ def test_memory_feedback_loop_trial_is_optional_and_template_visible() -> None:
     assert manifest["memory_integrity_policy"]["frozen_readonly_excluded_from_default_retrieval_and_writes"] is True
     assert manifest["observation_and_causal_attribution"]["public_private_boundary_is_separate"] is True
     assert manifest["observation_and_causal_attribution"]["blocks_ordinary_local_causal_reasoning"] is False
-    assert "feedback_loop" in workbuddy_doc
-    assert "feedback_loop" in doubao_doc
     assert "causal-attribution" in trial
     assert "does not prove causality" in trial
 

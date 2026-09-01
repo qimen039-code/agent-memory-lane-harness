@@ -1,7 +1,0 @@
-interface:
-  display_name: "Claim Boundary Harness"
-  short_description: "声明边界、证据分级、风险路由、记忆隔离、事实/假设分离和发布前复核。"
-  default_prompt: "Use $claim-boundary-harness to run a claim-boundary review with evidence labels, risk routing, memory-lane boundaries, and unknowns."
-
-policy:
-  allow_implicit_invocation: true

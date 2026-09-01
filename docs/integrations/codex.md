@@ -35,7 +35,7 @@ authority, denies, freezes, writes memory, or mutates policy.
 
 R5 actions and other sensitive operations still require the exact confirmation
 defined by the active instructions and the host's native permission/security
-boundary. CBH does not create a permit or session bypass.
+boundary. ACCF does not create a permit or session bypass.
 
 ## Update Check
 

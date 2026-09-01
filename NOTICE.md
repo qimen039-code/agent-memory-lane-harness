@@ -1,6 +1,6 @@
 # Notice And Attribution
 
-Claim Boundary Harness (CBH) is maintained at:
+Agent Cognitive Continuity Framework (ACCF) is maintained at:
 
 https://github.com/qimen039-code/claim-boundary-harness
 
@@ -16,16 +16,16 @@ license notice and cite the project using `CITATION.cff` when practical.
 
 Recommended short attribution:
 
-> Based on or adapted from Claim Boundary Harness (CBH),
+> Based on or adapted from Agent Cognitive Continuity Framework (ACCF),
 > https://github.com/qimen039-code/claim-boundary-harness.
 
 ## Project Contribution Boundary
 
-CBH's contribution is the composed governance contract around agent workflows:
-claim verification, memory continuity, risk routing, correction accumulation,
-bounded retrieval and reading, selective runtime gates, and adapter-boundary
-documentation. It is a framework and reference implementation, not a claim that
-all underlying ideas were invented here.
+ACCF's contribution is the composed cognitive-continuity framework around agent
+workflows: source-linked memory, execution-state continuity, sustained task
+focus, bounded retrieval and reading, verified correction reuse, evidence
+integrity, and adapter-boundary documentation. It is a framework and reference
+implementation, not a claim that all underlying ideas were invented here.
 
 Public influences, established engineering patterns, and non-adopted boundaries
 are listed in `docs/influences-and-attribution.md` and `CREDITS.toml`. Those
